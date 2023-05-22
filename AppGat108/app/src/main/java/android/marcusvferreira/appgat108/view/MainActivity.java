@@ -2,13 +2,16 @@ package android.marcusvferreira.appgat108.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.marcusvferreira.appgat108.R;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,11 +19,13 @@ public class MainActivity extends AppCompatActivity {
 
     TextView campoTempoTranscorrido;
 
-    Button btnIniciarPausar, btnPausar;
+    Button btnIniciarPausar, btnSelecionarTempo;
 
     Timer timer;
     TimerTask timerTask;
-    Double tempo = 0.0;
+    Double tempoTranscorrido = 0.0;
+
+    public int horasSelecionada, minutosSelecionado;
 
     boolean timerIniciado = false;
 
@@ -28,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        btnSelecionarTempo = (Button) findViewById(R.id.btn_selecionar_tempo);
+
 
         campoTempoTranscorrido = (TextView) findViewById(R.id.tv_tempo_transcorrido);
         btnIniciarPausar = (Button) findViewById(R.id.btn_iniciar_pausar);
@@ -54,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             iniciarTimer();
         } else {
             timerIniciado = false;
-            btnIniciarPausar.setText("INICAR");
+            btnIniciarPausar.setText("INICIAR");
 
             timerTask.cancel();
         }
@@ -67,18 +75,17 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tempo++;
-                        campoTempoTranscorrido.setText("Transcorrido \n" + getTimerText());
+                        tempoTranscorrido++;
+                        campoTempoTranscorrido.setText("Transcorrido\n" + getTimerText());
                     }
                 });
-
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
     private String getTimerText() {
-        int rounded = (int) Math.round(tempo);
+        int rounded = (int) Math.round(tempoTranscorrido);
 
         int segundos = ((rounded % 86400) % 3600) % 60;
         int minutos = ((rounded % 86400) % 3600) / 60;
@@ -86,5 +93,23 @@ public class MainActivity extends AppCompatActivity {
 
         return String.format("%02d", horas) + " : " + String.format("%02d", minutos) + " : " +
                 String.format("%02d", segundos);
+    }
+
+    public void clickSelecionarTempo(View view){
+        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int horas, int minutos) {
+                horasSelecionada = horas;
+                minutosSelecionado = minutos;
+                btnSelecionarTempo.setText(String.format(Locale.getDefault(), "%02d:%02d",
+                        horasSelecionada, minutosSelecionado));
+            }
+        };
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                AlertDialog.THEME_HOLO_DARK,onTimeSetListener, horasSelecionada, minutosSelecionado,
+                true);
+        timePickerDialog.setTitle("Selecione o tempo");
+        timePickerDialog.show();
     }
 }

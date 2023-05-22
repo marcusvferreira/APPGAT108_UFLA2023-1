@@ -165,7 +165,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Transcorrido:"
+            android:text="Transcorrido\n00 : 00 : 00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -180,7 +180,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Desejado:"
+            android:text="Desejado"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -189,19 +189,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_tempo"
             app:layout_constraintVertical_bias="0.0" />
-
-        <EditText
-            android:id="@+id/et_tempo_desejado"
-            android:layout_width="100dp"
-            android:layout_height="48dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="TEMPO"
-            android:inputType="datetime|time"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.84"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView29" />
 
         <ImageView
             android:id="@+id/img_tempo"
@@ -212,6 +199,20 @@
             app:layout_constraintStart_toStartOf="@+id/tv_tempo"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/time" />
+
+        <Button
+            android:id="@+id/btn_selecionar_tempo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="clickSelecionarTempo"
+            android:text="Selecione\no tempo"
+            android:textAlignment="center"
+            android:textSize="10sp"
+            app:iconPadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.84"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView29" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -251,7 +252,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="309dp"
             android:layout_marginBottom="1dp"
-            android:text="Consumo"
+            android:text="Consumo\n00.00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -337,7 +338,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="250dp"
             android:layout_marginTop="5dp"
-            android:text="Percorrida:"
+            android:text="Percorrida\n00.00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -351,7 +352,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Total:"
+            android:text="Total\n00.00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -405,7 +406,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="250dp"
             android:layout_marginTop="5dp"
-            android:text="Média:"
+            android:text="Média\n00.00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -419,7 +420,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Recomendada:"
+            android:text="Recomendada\n00.00"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
