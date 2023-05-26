@@ -1,10 +1,19 @@
 package android.marcusvferreira.appgat108.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.marcusvferreira.appgat108.R;
+import android.marcusvferreira.appgat108.controller.Permissoes;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,18 +24,32 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Comentar acerca do código...
+ * */
 public class MainActivity extends AppCompatActivity {
 
-    TextView campoTempoTranscorrido;
+    //Permissões necessárias
+    private String[] permissoes = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
 
+    //Objetos para controlar os campos TextView
+    TextView campoTempoTranscorrido, campoLocalizacaoAtual, campoLocalizacaoDestino;
+
+    //Objetos para controlar os botões
     Button btnIniciarPausar, btnSelecionarTempo;
 
+    //Objetos necessários para obter a localização via GPS
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+
+    //Objetos e variáveis para controle do timer
     Timer timer;
     TimerTask timerTask;
     Double tempoTranscorrido = 0.0;
-
-    public int horasSelecionada, minutosSelecionado;
-
+    int horasSelecionada, minutosSelecionado;
     boolean timerIniciado = false;
 
     @Override
@@ -34,15 +57,67 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnSelecionarTempo = (Button) findViewById(R.id.btn_selecionar_tempo);
-
-
-        campoTempoTranscorrido = (TextView) findViewById(R.id.tv_tempo_transcorrido);
-        btnIniciarPausar = (Button) findViewById(R.id.btn_iniciar_pausar);
-
+        //...
+        campoLocalizacaoAtual = findViewById(R.id.tv_loc_atual_dados);
+        campoLocalizacaoDestino = findViewById(R.id.tv_loc_destino_dados);
+        btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
+        campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
+        btnIniciarPausar = findViewById(R.id.btn_iniciar_pausar);
         timer = new Timer();
+
+        //Validar permissões
+        Permissoes.validarPermissoes(permissoes, this, 1);
+
+        //Objeto responsável por gerenciar a localização do usuário
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                Double latitude = location.getLatitude();
+                Double longitude = location.getLongitude();
+
+                campoLocalizacaoAtual.setText("Latitude: " + String.valueOf(latitude)
+                        + "\nLongitude: " + String.valueOf(longitude));
+            }
+        };
+
+        //Captura localização do dispostivo
+        getLocalizacao();
+
+
     }
-/*
+
+
+
+    //Verifica se as permissões foram concedidas
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (int permissaoResultado : grantResults) {
+            //Se permissão de localização aceita, captura localização do dispostivo
+            if (permissaoResultado == PackageManager.PERMISSION_GRANTED)
+                getLocalizacao();
+            // Se permissão de localização negada,
+            //video parte 1 . 8min
+            else {
+
+            }
+
+
+        }
+    }
+
+    //Obtem a localizacao do dispostivo
+    private void getLocalizacao() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
+    }
+
+
+    /*
     public void iniciar(View view) {
         EditText campoTempoDesejado = findViewById(R.id.et_tempo_desejado);
         EditText campoAutonomia = findViewById(R.id.et_autonomia);
@@ -55,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
     }
 */
 
+    //Controla o click no botão iniciar/pausar
     public void clickIniciarPausar(View view) {
         if (timerIniciado == false) {
             timerIniciado = true;
@@ -63,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             timerIniciado = false;
             btnIniciarPausar.setText("INICIAR");
-
             timerTask.cancel();
         }
     }
@@ -84,9 +159,9 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
+    //Realiza as conversões para obter o tempo em hrs, min e seg
     private String getTimerText() {
         int rounded = (int) Math.round(tempoTranscorrido);
-
         int segundos = ((rounded % 86400) % 3600) % 60;
         int minutos = ((rounded % 86400) % 3600) / 60;
         int horas = (rounded % 86400) / 3600;
@@ -95,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 String.format("%02d", segundos);
     }
 
+    //Implementa a funcionalidade do botão de selecionar o tempo pretendido
     public void clickSelecionarTempo(View view){
         TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -103,12 +179,12 @@ public class MainActivity extends AppCompatActivity {
                 minutosSelecionado = minutos;
                 btnSelecionarTempo.setText(String.format(Locale.getDefault(), "%02d:%02d",
                         horasSelecionada, minutosSelecionado));
+                btnSelecionarTempo.setTextSize(14);
             }
         };
-
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                AlertDialog.THEME_HOLO_DARK,onTimeSetListener, horasSelecionada, minutosSelecionado,
-                true);
+        @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this, AlertDialog.THEME_HOLO_DARK,onTimeSetListener, horasSelecionada,
+                minutosSelecionado, true);
         timePickerDialog.setTitle("Selecione o tempo");
         timePickerDialog.show();
     }

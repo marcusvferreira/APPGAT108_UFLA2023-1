@@ -5,8 +5,7 @@
     <string name="txt_ano_desenvolvimento">2023</string>
     <string name="txt_localizacao_atual">Atual</string>
     <string name="txt_localizacao_destino">Destino</string>
-    <string name="txt_latitude">Latitude:</string>
-    <string name="txt_longitude">Longitude:</string>
+    <string name="txt_localizacao_dados">Latitude: 0.0\nLongitude: 0.0</string>
     <string name="btn_pausar">PAUSAR</string>
     <string name="bnt_iniciar">INICIAR</string>
 </resources>
