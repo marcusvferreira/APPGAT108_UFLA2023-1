@@ -14,6 +14,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.marcusvferreira.appgat108.R;
 import android.marcusvferreira.appgat108.controller.Permissoes;
+import android.marcusvferreira.appgat108.model.Local;
+import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -52,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     int horasSelecionada, minutosSelecionado;
     boolean timerIniciado = false;
 
+    //Criação do obejto destino (estacionamento DAT UFLA)
+    Local destino = new Local( -21.227932, -44.974912);
+
+    //Criação do obejto veículo
+    Veiculo veiculo = new Veiculo();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Captura localização do dispostivo
         getLocalizacao();
-
-
     }
 
 
@@ -99,23 +105,22 @@ public class MainActivity extends AppCompatActivity {
             if (permissaoResultado == PackageManager.PERMISSION_GRANTED)
                 getLocalizacao();
             // Se permissão de localização negada,
-            //video parte 1 . 8min
-            else {
 
+            else {
+                //video parte 1 . 8min
             }
 
 
         }
     }
 
-    //Obtem a localizacao do dispostivo
+    //Obtem a localização do dispostivo
     private void getLocalizacao() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
-
 
     /*
     public void iniciar(View view) {
@@ -170,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 String.format("%02d", segundos);
     }
 
-    //Implementa a funcionalidade do botão de selecionar o tempo pretendido
+    //Implementa a funcionalidade do botão de selecionar o tempo desejado
     public void clickSelecionarTempo(View view){
         TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
