@@ -14,7 +14,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.marcusvferreira.appgat108.R;
 import android.marcusvferreira.appgat108.controller.Permissoes;
-import android.marcusvferreira.appgat108.model.Local;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +31,8 @@ import java.util.TimerTask;
  * */
 public class MainActivity extends AppCompatActivity {
 
+    private static final DecimalFormat decfor = new DecimalFormat("0.00");
+
     //Permissões necessárias
     private String[] permissoes = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     //Objetos para controlar os campos TextView
-    TextView campoTempoTranscorrido, campoLocalizacaoAtual, campoLocalizacaoDestino;
+    TextView campoTempoTranscorrido, campoLocalizacaoAtual, campoLocalizacaoDestino, campoVelocidadeMedia,
+            campoDistanciaTotal;
 
     //Objetos para controlar os botões
     Button btnIniciarPausar, btnSelecionarTempo;
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     boolean timerIniciado = false;
 
     //Criação do obejto destino (estacionamento DAT UFLA)
-    Local destino = new Local( -21.227932, -44.974912);
+    Location destino = new Location("");
 
     //Criação do obejto veículo
     Veiculo veiculo = new Veiculo();
@@ -68,10 +71,23 @@ public class MainActivity extends AppCompatActivity {
         //...
         campoLocalizacaoAtual = findViewById(R.id.tv_loc_atual_dados);
         campoLocalizacaoDestino = findViewById(R.id.tv_loc_destino_dados);
+        campoVelocidadeMedia = findViewById(R.id.tv_velocidade_media);
+        campoDistanciaTotal = findViewById(R.id.tv_distancia_total);
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
         btnIniciarPausar = findViewById(R.id.btn_iniciar_pausar);
         timer = new Timer();
+
+        /******************************************************************************/
+
+        //Configura o destino como o estacionamento do DAT-UFLA
+        destino.setLatitude(-21.227932);
+        destino.setLongitude(-44.974912);
+
+        campoLocalizacaoDestino.setText("Latitude: " + destino.getLatitude()
+                + "\nLongitude: " + destino.getLongitude());
+
+        /******************************************************************************/
 
         //Validar permissões
         Permissoes.validarPermissoes(permissoes, this, 1);
@@ -82,11 +98,16 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Double latitude = location.getLatitude();
-                Double longitude = location.getLongitude();
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                veiculo.setVelocidade(location.getSpeed());
 
                 campoLocalizacaoAtual.setText("Latitude: " + String.valueOf(latitude)
                         + "\nLongitude: " + String.valueOf(longitude));
+                campoVelocidadeMedia.setText("Média\n" + decfor.format(veiculo.getVelocidade()*3.6) + " km/h");
+
+               campoDistanciaTotal.setText("Total\n" + decfor.format(location.distanceTo(destino)/1000)+ " km");
+
             }
         };
 

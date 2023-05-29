@@ -227,7 +227,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="309dp"
             android:layout_marginBottom="1dp"
-            android:text="Consumo\n0.00"
+            android:text="Consumo\n0.0"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -313,7 +313,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="250dp"
             android:layout_marginTop="5dp"
-            android:text="Percorrida\n0.00"
+            android:text="Percorrida\n0.0"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -327,7 +327,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Total\n0.00"
+            android:text="Total\n0.0"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -376,12 +376,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/velocidade_media"
+            android:id="@+id/tv_velocidade_media"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="250dp"
             android:layout_marginTop="5dp"
-            android:text="Média\n0.00"
+            android:text="Média\n0.0"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -390,12 +390,12 @@
             app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
         <TextView
-            android:id="@+id/velocidade_recomendada"
+            android:id="@+id/tv_velocidade_recomendada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Recomendada\n0.00"
+            android:text="Recomendada\n0.0"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"

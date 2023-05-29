@@ -1,8 +1,9 @@
 package android.marcusvferreira.appgat108.model;
 
+import android.location.Location;
+
 public class Veiculo {
     private double velocidade, autonomia, consumo, tempoTranscorrido, tempoDesejeado, distanciaPercorrida;
-    private Local destino;
 
     public double getVelocidade() {
         return velocidade;
@@ -50,14 +51,6 @@ public class Veiculo {
 
     public void setDistanciaPercorrida(double distanciaPercorrida) {
         this.distanciaPercorrida = distanciaPercorrida;
-    }
-
-    public Local getDestino() {
-        return destino;
-    }
-
-    public void setDestino(Local destino) {
-        this.destino = destino;
     }
 
     //Cálculo para Fox 1.0 três cilindros
