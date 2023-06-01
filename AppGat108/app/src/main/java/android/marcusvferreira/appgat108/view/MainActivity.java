@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.MediaRouteButton;
 import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.marcusvferreira.appgat108.R;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -38,17 +40,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     TextView campoTempoTranscorrido;
 
     //Objetos para controlar os botões
-    Button btnIniciarPausar, btnSelecionarTempo;
+    Button btnIniciar, btnSelecionarTempo;
 
     //Objetos e variáveis para controle do timer
     Timer timer;
     TimerTask timerTask;
-    Double tempoTranscorrido = 0.0;
+    //Double tempoTranscorrido = 0.0;
     int horasSelecionada, minutosSelecionado;
     private boolean isTimerIniciado = false; //Controla se o timer foi iniciado
     private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
     private boolean isVeiculoSelecionado = false;  //Controla se o modelo do veículo foi selecionado
-
 
     //Criação do obejto veículo
     Veiculo veiculo = new Veiculo();
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
-        btnIniciarPausar = findViewById(R.id.btn_iniciar_pausar);
+        btnIniciar = findViewById(R.id.btn_iniciar);
         timer = new Timer();
         controleLocalizacao = new ControleLocalizacao(this, this, veiculo);
 
@@ -102,16 +103,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     //Controla o click no botão iniciar/pausar
-    public void clickIniciarPausar(View view) {
-        if (isTimerIniciado == false) {
+    public void clickIniciar(View view) {
+        if (!isTimerIniciado) {
             isTimerIniciado = true;
-            btnIniciarPausar.setText("PAUSAR");
+            btnIniciar.setVisibility(View.INVISIBLE); // Define a visibilidade do botão como invisível
+            Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_SHORT).show();
             iniciarTimer();
             iniciarObtencaoLocalizacao();
-        } else {
-            isTimerIniciado = false;
-            btnIniciarPausar.setText("INICIAR");
-            timerTask.cancel();
         }
     }
 
@@ -122,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tempoTranscorrido++;
+                        veiculo.setTempoTranscorrido(veiculo.getTempoTranscorrido()+1);
                         campoTempoTranscorrido.setText("Transcorrido\n" + getTimerText());
                     }
                 });
@@ -133,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Realiza as conversões para obter o tempo em hrs, min e seg
     private String getTimerText() {
-        int rounded = (int) Math.round(tempoTranscorrido);
+        int rounded = (int) Math.round(veiculo.getTempoTranscorrido());
         int segundos = ((rounded % 86400) % 3600) % 60;
         int minutos = ((rounded % 86400) % 3600) / 60;
         int horas = (rounded % 86400) / 3600;

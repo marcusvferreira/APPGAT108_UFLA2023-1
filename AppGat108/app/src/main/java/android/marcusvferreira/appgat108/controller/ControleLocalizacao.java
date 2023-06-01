@@ -3,7 +3,6 @@ package android.marcusvferreira.appgat108.controller;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,25 +20,26 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); //Converter os valores para formato decimal
     private static final DecimalFormat decfor2 = new DecimalFormat("#");
     private final Context context;
-    private Location destino = new Location(""); //Armazena a localização do destino
+    private final Location destino = new Location(""); //Armazena a localização do destino
     private Location origem = null; //Armazena a localização inicial (origem)
-    private Veiculo veiculo;
+    private final Veiculo veiculo;
     double distanciaTotal;
 
     //Objetos para manipular os campos TextView
-    private TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoLocalizacaoAtual,
-            campoLocalizacaoDestino, campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
+    private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoLocalizacaoAtual,
+            campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
 
     public ControleLocalizacao(Activity activity, Context context, Veiculo veiculo) { //Construtor
         this.context = context;
         this.veiculo = veiculo;
 
+        TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
         campoLocalizacaoAtual = activity.findViewById(R.id.tv_loc_atual_dados);
-        campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
         campoVelocidadeMedia = activity.findViewById(R.id.tv_velocidade_media);
         campoVelocidadeRecomendada = activity.findViewById(R.id.tv_velocidade_recomendada);
         campoDistanciaTotal = activity.findViewById(R.id.tv_distancia_total);
         campoDistanciaPercorrida = activity.findViewById(R.id.tv_distancia_percorrida);
+        campoConsumo = activity.findViewById(R.id.tv_consumo);
 
         //Configura o destino como sendo no final da Av. Norte da UFLA
         destino.setLatitude(-21.222635);
@@ -76,7 +76,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                MainActivity mainActivity = (MainActivity) context;
+                //MainActivity mainActivity = (MainActivity) context;
                 veiculo.setVelocidade(location.getSpeed());
                 atualizarLocalizacao(location.getLatitude(), location.getLongitude(), location.distanceTo(origem));
                // campoVelocidadeMedia.setText("Média\n" + decfor.format(location.getSpeed()*3.6) + " km/h");

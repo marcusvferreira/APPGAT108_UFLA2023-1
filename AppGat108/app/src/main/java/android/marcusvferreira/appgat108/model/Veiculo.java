@@ -1,7 +1,9 @@
 package android.marcusvferreira.appgat108.model;
 
 public class Veiculo {
-    private double velocidade, autonomia, consumo, tempoTranscorrido, tempoDesejeado, distanciaPercorrida;
+    private double velocidade, autonomia, consumo, tempoDesejeado, distanciaPercorrida;
+    private  double tempoTranscorrido = 0.0;
+
     private String modelo;
 
     public double getVelocidade() {
@@ -21,6 +23,8 @@ public class Veiculo {
     }
 
     public double getConsumo() {
+
+
         return consumo;
     }
 
