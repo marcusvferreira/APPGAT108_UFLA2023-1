@@ -13,7 +13,10 @@ import android.marcusvferreira.appgat108.controller.ControleLocalizacao;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -25,7 +28,7 @@ import java.util.TimerTask;
 /**
  * Comentar acerca do código...
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final DecimalFormat decfor = new DecimalFormat("0.00");
     private static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -41,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     TimerTask timerTask;
     Double tempoTranscorrido = 0.0;
     int horasSelecionada, minutosSelecionado;
-    boolean timerIniciado = false;
-    boolean tempoDesejadoSelecionado = false;
-    boolean veiculoSelecionado = true; // true por enquanto, comecar como false ao implementar completo
+    private boolean isTimerIniciado = false; //Controla se o timer foi iniciado
+    private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
+    private boolean isVeiculoSelecionado = false;  //Controla se o modelo do veículo foi selecionado
 
 
     //Criação do obejto veículo
@@ -63,10 +66,13 @@ public class MainActivity extends AppCompatActivity {
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
         btnIniciarPausar = findViewById(R.id.btn_iniciar_pausar);
         timer = new Timer();
-        controleLocalizacao = new ControleLocalizacao(this, this);
+        controleLocalizacao = new ControleLocalizacao(this, this, veiculo);
 
-
-
+        Spinner opcaoVeiculos = findViewById(R.id.spinner_veiculos);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opcaoVeiculos, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+        opcaoVeiculos.setAdapter(adapter);
+        opcaoVeiculos.setOnItemSelectedListener(this);
     }
 
     private void iniciarObtencaoLocalizacao() {
@@ -96,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
 
     //Controla o click no botão iniciar/pausar
     public void clickIniciarPausar(View view) {
-        if (timerIniciado == false) {
-            timerIniciado = true;
+        if (isTimerIniciado == false) {
+            isTimerIniciado = true;
             btnIniciarPausar.setText("PAUSAR");
             iniciarTimer();
             iniciarObtencaoLocalizacao();
         } else {
-            timerIniciado = false;
+            isTimerIniciado = false;
             btnIniciarPausar.setText("INICIAR");
             timerTask.cancel();
         }
@@ -145,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 btnSelecionarTempo.setText(String.format(Locale.getDefault(), "%02d:%02d",
                         horasSelecionada, minutosSelecionado));
                 btnSelecionarTempo.setTextSize(14);
-                tempoDesejadoSelecionado = true;
+                isTempoDesejadoSelecionado = true;
             }
         };
         @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -153,5 +159,16 @@ public class MainActivity extends AppCompatActivity {
                 minutosSelecionado, true);
         timePickerDialog.setTitle("Selecione o tempo");
         timePickerDialog.show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        veiculo.setModelo(parent.getItemAtPosition(position).toString());
+        isVeiculoSelecionado = true;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

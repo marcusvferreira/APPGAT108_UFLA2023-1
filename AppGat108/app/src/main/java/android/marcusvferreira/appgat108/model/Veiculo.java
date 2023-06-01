@@ -1,9 +1,8 @@
 package android.marcusvferreira.appgat108.model;
 
-import android.location.Location;
-
 public class Veiculo {
     private double velocidade, autonomia, consumo, tempoTranscorrido, tempoDesejeado, distanciaPercorrida;
+    private String modelo;
 
     public double getVelocidade() {
         return velocidade;
@@ -53,23 +52,40 @@ public class Veiculo {
         this.distanciaPercorrida = distanciaPercorrida;
     }
 
-    //Cálculo para Fox 1.0 três cilindros
-    //Leia mais em: https://quatrorodas.abril.com.br/auto-servico/o-teste-da-relacao-entre-velocidade-e-consumo/
-    double getConsumoMedio(double velocidade){
-        if(velocidade <= 0) return 0;
-        else if(velocidade <= 80) return 21.1;
-        else if(velocidade <= 100) return 15.6;
-        else return 10.4;
+    public String getModelo() {
+        return modelo;
     }
 
-    // ao inves do campo autonomia, fazer uma lista com os veiculos mencionados na materia
-    /*utilize a Reconciliação de Dados para determinar qual é a melhor velocidade para
-cada um dos pontos de passagem do Veículo. Como vimos, a velocidade e o tempo
-interferem no consumo.
-    * */
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
 
-
-//=;
-//= -44.974912;
-// try catch
+    //Cálculo para o consumo conforme matéria "O teste da relação entre velocidade e consumo"
+    //Disponível em: https://quatrorodas.abril.com.br/auto-servico/o-teste-da-relacao-entre-velocidade-e-consumo/
+    double getConsumoMedio(double velocidade) {
+        switch (this.modelo) {
+            case "Fox":
+                if (velocidade <= 0) return 0;
+                else if (velocidade <= 80) return 21.1;
+                else if (velocidade <= 100) return 15.6;
+                else return 10.4;
+            case "Siena":
+                if (velocidade <= 0) return 0;
+                else if (velocidade <= 80) return 14.6;
+                else if (velocidade <= 100) return 12.9;
+                else return 8.8;
+            case "Fusion":
+                if (velocidade <= 0) return 0;
+                else if (velocidade <= 80) return 21.6;
+                else if (velocidade <= 100) return 15.4;
+                else return 10.1;
+            case "Azera":
+                if (velocidade <= 0) return 0;
+                else if (velocidade <= 80) return 16.5;
+                else if (velocidade <= 100) return 13.3;
+                else return 10.5;
+            default:
+                return 0;
+        }
+    }
 }

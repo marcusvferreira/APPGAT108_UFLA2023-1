@@ -8,4 +8,12 @@
     <string name="txt_localizacao_dados">Latitude: 0.0\nLongitude: 0.0</string>
     <string name="btn_pausar">PAUSAR</string>
     <string name="bnt_iniciar">INICIAR</string>
+    
+    <string-array name="opcaoVeiculos">
+        <item>Fox</item>
+        <item>Siena</item>
+        <item>Fusion</item>
+        <item>Azera</item>
+    </string-array>
+    
 </resources>
