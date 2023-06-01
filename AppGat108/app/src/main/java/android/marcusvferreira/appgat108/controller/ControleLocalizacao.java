@@ -18,10 +18,9 @@ import java.text.DecimalFormat;
 
 public class ControleLocalizacao implements Runnable, LocationListener {
 
-    private static final DecimalFormat decfor = new DecimalFormat("0.00"); //Converter os valores para formato decimal
+    private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); //Converter os valores para formato decimal
+    private static final DecimalFormat decfor2 = new DecimalFormat("#");
     private final Context context;
-    private final Activity activity;
-    private LocationManager locationManager;
     private Location destino = new Location(""); //Armazena a localização do destino
     private Location origem = null; //Armazena a localização inicial (origem)
     private Veiculo veiculo;
@@ -33,7 +32,6 @@ public class ControleLocalizacao implements Runnable, LocationListener {
 
     public ControleLocalizacao(Activity activity, Context context, Veiculo veiculo) { //Construtor
         this.context = context;
-        this.activity = activity;
         this.veiculo = veiculo;
 
         campoLocalizacaoAtual = activity.findViewById(R.id.tv_loc_atual_dados);
@@ -54,7 +52,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     @Override
     public void run() {
         Looper.prepare();
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         }
@@ -95,19 +93,19 @@ public class ControleLocalizacao implements Runnable, LocationListener {
 
     private void atualizarLocalizacao(double latitude, double longitude, double distancia) {
         String textoLocalizacao = "Latitude: " + latitude + "\nLongitude: " + longitude;
-        String textoVelocidadeMedia = "Média\n" + decfor.format(veiculo.getVelocidade()*3.6) + " km/h";
+        String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidade()*3.6) + " km/h";
         String textoDistanciaPercorrida, textoDistanciaTotal;
 
         if(distancia > 1000){ //Se maior que 1000m, exibe a distância em km
-            textoDistanciaPercorrida = "Percorrida\n" + decfor.format(distancia/1000)+ " km";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(distancia/1000)+ " km";
         } else {
-            textoDistanciaPercorrida = "Percorrida\n" + decfor.format(distancia)+ " m";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(distancia)+ " m";
         }
 
         if(distanciaTotal > 1000){ //Se maior que 1000m, exibe a distância em km
-            textoDistanciaTotal = "Total\n" + decfor.format(distanciaTotal/1000)+ " km";
+            textoDistanciaTotal = "Total\n" + decfor1.format(distanciaTotal/1000)+ " km";
         } else {
-            textoDistanciaTotal = "Total\n" + decfor.format(distanciaTotal)+ " m";
+            textoDistanciaTotal = "Total\n" + decfor2.format(distanciaTotal)+ " m";
         }
 
         campoDistanciaTotal.setText(textoDistanciaTotal);

@@ -13,6 +13,7 @@ import android.marcusvferreira.appgat108.controller.ControleLocalizacao;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);// Mantém a tela ligada
 
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
