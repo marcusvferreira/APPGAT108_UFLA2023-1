@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (!isTimerIniciado) {
             isTimerIniciado = true;
             btnIniciar.setVisibility(View.INVISIBLE); // Define a visibilidade do botão como invisível
-            Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_LONG).show();
             iniciarTimer();
             iniciarObtencaoLocalizacao();
         }
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        veiculo.setTempoTranscorrido(veiculo.getTempoTranscorrido()+1);
+                        veiculo.setTempoTranscorrido(veiculo.getTempoTranscorrido() + 1);
                         campoTempoTranscorrido.setText("Transcorrido\n" + getTimerText());
                     }
                 });
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         horasSelecionada, minutosSelecionado));
                 btnSelecionarTempo.setTextSize(14);
                 isTempoDesejadoSelecionado = true;
+                veiculo.setTempoDesejeado(minutos + horas * 60); //Passa para veículo o tempo selecionado em min
             }
         };
         @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(

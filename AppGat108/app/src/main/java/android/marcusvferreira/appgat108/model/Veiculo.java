@@ -1,11 +1,13 @@
 package android.marcusvferreira.appgat108.model;
 
 public class Veiculo {
-    private double velocidade, autonomia, consumo, tempoDesejeado, distanciaPercorrida;
+    //Atributos
+    private double velocidade, autonomia, consumo, distanciaPercorrida;
+    private int tempoDesejeado;
     private  double tempoTranscorrido = 0.0;
-
     private String modelo;
 
+    //Métodos
     public double getVelocidade() {
         return velocidade;
     }
@@ -14,18 +16,8 @@ public class Veiculo {
         this.velocidade = velocidade;
     }
 
-    public double getAutonomia() {
-        return autonomia;
-    }
-
-    public void setAutonomia(double autonomia) {
-        this.autonomia = autonomia;
-    }
-
     public double getConsumo() {
-
-
-        return consumo;
+        return getConsumoMedio(velocidade);
     }
 
     public void setConsumo(double consumo) {
@@ -40,11 +32,11 @@ public class Veiculo {
         this.tempoTranscorrido = tempoTranscorrido;
     }
 
-    public double getTempoDesejeado() {
+    public int getTempoDesejeado() {
         return tempoDesejeado;
     }
 
-    public void setTempoDesejeado(double tempoDesejeado) {
+    public void setTempoDesejeado(int tempoDesejeado) {
         this.tempoDesejeado = tempoDesejeado;
     }
 
@@ -93,3 +85,5 @@ public class Veiculo {
         }
     }
 }
+
+//add a uma lista e pegar a cada 100m

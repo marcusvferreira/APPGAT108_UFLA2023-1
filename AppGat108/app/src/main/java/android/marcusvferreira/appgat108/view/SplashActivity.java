@@ -16,7 +16,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Realiza a troca da tela Splash para a principal
+        //Realiza a troca da tela Splash para a principal
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -25,10 +25,10 @@ public class SplashActivity extends AppCompatActivity {
         }, TEMPO_TELA_SPLASH);
     }
 
-    private void mudarParaActivityMain(){
+    private void mudarParaActivityMain() {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(intent); // inicializa a activity main
-        finish(); // finaliza a activity splash
+        startActivity(intent); //Inicializa a activity main
+        finish(); //Finaliza a activity splash
     }
 }
 
