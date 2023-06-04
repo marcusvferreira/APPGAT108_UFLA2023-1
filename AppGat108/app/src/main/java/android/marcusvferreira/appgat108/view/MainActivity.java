@@ -23,6 +23,13 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Timer;
@@ -31,10 +38,11 @@ import java.util.TimerTask;
 /**
  * Comentar acerca do código...
  */
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
 
     private static final DecimalFormat decfor = new DecimalFormat("0.00");
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    GoogleMap mMap;
 
     //Objetos para controlar os campos TextView
     TextView campoTempoTranscorrido;
@@ -75,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
         opcaoVeiculos.setAdapter(adapter);
         opcaoVeiculos.setOnItemSelectedListener(this);
+
+
+
     }
 
     private void iniciarObtencaoLocalizacao() {
@@ -110,6 +121,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_LONG).show();
             iniciarTimer();
             iniciarObtencaoLocalizacao();
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
         }
     }
 
@@ -170,5 +185,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        LatLng localizacao = new LatLng(-21,-45);
+
+        mMap.addMarker(new MarkerOptions().position(localizacao).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(localizacao));
     }
 }

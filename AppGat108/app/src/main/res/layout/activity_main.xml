@@ -412,11 +412,26 @@
             app:srcCompat="@drawable/velocidade" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="393dp"
+        android:layout_height="321dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout5"
+        app:layout_constraintVertical_bias="0.0" />
+
     <Button
         android:id="@+id/btn_iniciar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:onClick="clickIniciar"
         android:text="@string/bnt_iniciar"
         app:layout_constraintEnd_toEndOf="parent"

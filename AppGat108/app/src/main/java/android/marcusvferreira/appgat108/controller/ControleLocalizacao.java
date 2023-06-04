@@ -113,6 +113,8 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         campoVelocidadeMedia.setText(textoVelocidadeMedia);
         campoDistanciaPercorrida.setText(textoDistanciaPercorrida);
 
+
+
     }
 
 }
