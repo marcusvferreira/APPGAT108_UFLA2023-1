@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);// Mantém a tela ligada
 
         mapa = getSupportFragmentManager().findFragmentById(R.id.map);
-        mapa.getView().setVisibility(View.INVISIBLE);
-
+        mapa.getView().setVisibility(View.INVISIBLE); //Define o mapa como invisível ao iniciar
 
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
@@ -119,14 +118,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    //Controla o click no botão iniciar/pausar
+    //Método resposável pela resposta ao click do usuário no button INICIAR
     public void clickIniciar(View view) {
         if (isTempoDesejadoSelecionado) {
-            btnIniciar.setVisibility(View.INVISIBLE); // Define a visibilidade do botão como invisível
+            btnIniciar.setVisibility(View.INVISIBLE); //Define a visibilidade do botão como invisível
             Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_LONG).show();
             iniciarTimer();
             iniciarObtencaoLocalizacao();
-            mapa.getView().setVisibility(View.VISIBLE);
+            mapa.getView().setVisibility(View.VISIBLE); //Define o mapa como visível
 
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -136,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+
+    //Método responsável pelo controle do timer
     private void iniciarTimer() {
         timerTask = new TimerTask() {
             @Override
@@ -197,13 +198,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    //Método referente à atualização da view map
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
         controleLocalizacao.setmMap(googleMap);
-
-
-
     }
 }

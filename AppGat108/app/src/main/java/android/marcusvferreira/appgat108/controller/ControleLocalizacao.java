@@ -74,6 +74,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         Looper.loop();
     }
 
+    //Método responsável por atualizar os dados ao haver mudança na localização
     @Override
     public void onLocationChanged(Location location) {
 
@@ -86,37 +87,30 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             distanciaTotal = location.distanceTo(veiculo.getDestino());
         }
 
-        //Atualizar localização
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
-
-
-                //MainActivity mainActivity = (MainActivity) context;
-                veiculo.setVelocidade(location.getSpeed());
-                atualizarLocalizacao(location.getLatitude(), location.getLongitude(), location.distanceTo(veiculo.getOrigem()));
-                // campoVelocidadeMedia.setText("Média\n" + decfor.format(location.getSpeed()*3.6) + " km/h");
-
-                /*
-                try {
-                    Thread.sleep(1000);   //Atraso de 1 segundo
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                double distanciaPercorrida = location.distanceTo(veiculo.getOrigem()); //Distância do ponto de origem até a localização atual
+                double velocidade = location.getSpeed()*3.6; //Converte de m/s para km/h
+                atualizarLocalizacao(latitude, longitude, distanciaPercorrida, velocidade);
             }
         });
     }
 
-    private void atualizarLocalizacao(double latitude, double longitude, double distancia) {
+    private void atualizarLocalizacao(double latitude, double longitude, double distanciaPercorrida, double velocidade) {
+        veiculo.setVelocidade(velocidade);
+
         String textoLocalizacao = "Latitude: " + latitude + "\nLongitude: " + longitude;
         String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidade() * 3.6) + " km/h";
         String textoDistanciaPercorrida, textoDistanciaTotal;
 
-        if (distancia > 1000) { //Se maior que 1000m, exibe a distância em km
-            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(distancia / 1000) + " km";
+        if (distanciaPercorrida > 1000) { //Se maior que 1000m, exibe a distância em km
+            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(distanciaPercorrida / 1000) + " km";
         } else {
-            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(distancia) + " m";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(distanciaPercorrida) + " m";
         }
 
         if (distanciaTotal > 1000) { //Se maior que 1000m, exibe a distância em km
@@ -130,7 +124,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         campoVelocidadeMedia.setText(textoVelocidadeMedia);
         campoDistanciaPercorrida.setText(textoDistanciaPercorrida);
 
-        //Adiciona pin marker
+        //Adiciona pin marker no mapa
         if (mMap != null) {
             mMap.clear(); //Limpa marcadores
             //Marca a posição atual no mapa
