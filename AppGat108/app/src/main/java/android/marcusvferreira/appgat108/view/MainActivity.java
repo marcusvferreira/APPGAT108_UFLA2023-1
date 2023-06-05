@@ -3,6 +3,7 @@ package android.marcusvferreira.appgat108.view;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     int horasSelecionada, minutosSelecionado;
     private boolean isTimerIniciado = false; //Controla se o timer foi iniciado
     private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
-    private boolean isVeiculoSelecionado = false;  //Controla se o modelo do veículo foi selecionado
 
     //Criação do obejto veículo
     Veiculo veiculo = new Veiculo();
@@ -65,12 +65,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // private TextView campoLocalizacaoAtual;
     private ControleLocalizacao controleLocalizacao;
 
+    Fragment mapa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);// Mantém a tela ligada
+
+        mapa = getSupportFragmentManager().findFragmentById(R.id.map);
+        mapa.getView().setVisibility(View.INVISIBLE);
+
 
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
@@ -84,8 +89,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         opcaoVeiculos.setAdapter(adapter);
         opcaoVeiculos.setOnItemSelectedListener(this);
 
-
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     private void iniciarObtencaoLocalizacao() {
@@ -115,16 +121,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Controla o click no botão iniciar/pausar
     public void clickIniciar(View view) {
-        if (!isTimerIniciado) {
-            isTimerIniciado = true;
+        if (isTempoDesejadoSelecionado) {
             btnIniciar.setVisibility(View.INVISIBLE); // Define a visibilidade do botão como invisível
             Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_LONG).show();
             iniciarTimer();
             iniciarObtencaoLocalizacao();
+            mapa.getView().setVisibility(View.VISIBLE);
 
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
+        } else{
+            Toast.makeText(this, "Selecione o tempo desejado para o percurso!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -176,12 +184,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timePickerDialog.show();
     }
 
+    //Método referente ao Spinner opcaoVeiculos
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         veiculo.setModelo(parent.getItemAtPosition(position).toString());
-        isVeiculoSelecionado = true;
     }
 
+    //Método referente ao Spinner opcaoVeiculos (apesar de vazio para a necessidade da implementação
+    //feita, é obrigatório)
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
@@ -190,9 +200,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng localizacao = new LatLng(-21,-45);
 
-        mMap.addMarker(new MarkerOptions().position(localizacao).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(localizacao));
+        controleLocalizacao.setmMap(googleMap);
+
+
+
     }
 }

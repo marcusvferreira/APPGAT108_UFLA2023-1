@@ -1,11 +1,37 @@
 package android.marcusvferreira.appgat108.model;
 
+import android.location.Location;
+
+/**
+ * Comentar acerca do código...
+ */
 public class Veiculo {
     //Atributos
-    private double velocidade, autonomia, consumo, distanciaPercorrida;
+    private double velocidade, autonomia, consumo, distanciaPercorrida, tempoTranscorrido;;
     private int tempoDesejeado;
-    private  double tempoTranscorrido = 0.0;
     private String modelo;
+    private final Location origem, destino;
+
+    public Veiculo(){ //Construtor
+        origem =  new Location("");
+        destino =  new Location("");
+    }
+
+    public double getAutonomia() {
+        return autonomia;
+    }
+
+    public void setAutonomia(double autonomia) {
+        this.autonomia = autonomia;
+    }
+
+    public Location getOrigem() {
+        return origem;
+    }
+
+    public Location getDestino() {
+        return destino;
+    }
 
     //Métodos
     public double getVelocidade() {
