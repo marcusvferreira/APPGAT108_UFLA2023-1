@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 
 /**
  * Comentar acerca do código...
@@ -29,23 +30,21 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); //Converter os valores para formato decimal
     private static final DecimalFormat decfor2 = new DecimalFormat("#"); //Converter os valores para formato sem casas decimais
     private final Context context;
-
-    public void setmMap(GoogleMap mMap) {
-        this.mMap = mMap;
-    }
-
-    GoogleMap mMap;
+    private final Handler handler;
+    private GoogleMap mMap;
     private boolean isOrigemObtida = false;
     private final Veiculo veiculo;
-    double distanciaTotal;
+    private Thread thread;
 
-    //Objetos para manipular os campos TextView
+    //Objetos para manipular os campos TextView presentes na activity main
     private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoLocalizacaoAtual,
             campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
 
-    public ControleLocalizacao(Activity activity, Context context, Veiculo veiculo) { //Construtor
+    //Construtor
+    public ControleLocalizacao(Activity activity, Context context, Veiculo veiculo, Handler handler) {
         this.context = context;
         this.veiculo = veiculo;
+        this.handler = handler;
 
         TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
         campoLocalizacaoAtual = activity.findViewById(R.id.tv_loc_atual_dados);
@@ -61,6 +60,12 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         String textoDestino = "Latitude: " + veiculo.getDestino().getLatitude() + "\nLongitude: "
                 + veiculo.getDestino().getLongitude();
         campoLocalizacaoDestino.setText(textoDestino);
+        this.thread = new Thread(this); // instancia a thread
+        this.thread.start();
+    }
+
+    public void setmMap(GoogleMap mMap) {
+        this.mMap = mMap;
     }
 
     @SuppressLint("MissingPermission")
@@ -69,64 +74,58 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         Looper.prepare();
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
         }
         Looper.loop();
     }
 
-    //Método responsável por atualizar os dados ao haver mudança na localização
+    //Método responsável por atualizar os dados qnd haver mudança na localização
     @Override
     public void onLocationChanged(Location location) {
-
-        // Verificar se a origem ainda não foi definida. Armazena a primeira localização lida como origem
+        // Verifica se a origem ainda não foi definida. Armazena a primeira localização lida como origem
         // e calcula a distância total do percurso
         if (!isOrigemObtida) {
             isOrigemObtida = true;
             veiculo.getOrigem().setLatitude(location.getLatitude());
             veiculo.getOrigem().setLongitude(location.getLongitude());
-            distanciaTotal = location.distanceTo(veiculo.getDestino());
+            veiculo.setDistanciaTotal(location.distanceTo(veiculo.getDestino()));
         }
 
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                double distanciaPercorrida = location.distanceTo(veiculo.getOrigem()); //Distância do ponto de origem até a localização atual
-                double velocidade = location.getSpeed()*3.6; //Converte de m/s para km/h
-                atualizarLocalizacao(latitude, longitude, distanciaPercorrida, velocidade);
-            }
-        });
+        Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
+        thread.start();
     }
 
-    private void atualizarLocalizacao(double latitude, double longitude, double distanciaPercorrida, double velocidade) {
-        veiculo.setVelocidade(velocidade);
-
+    public void atualizarLocalizacao(double latitude, double longitude) {
+        String textoVelocidadeRecomendada = "Recomendada\n" + decfor1.format(veiculo.getVelociddadeRecomendada()) + " km/h";
+        String textoConsumo = "Consumo\n" + decfor1.format(veiculo.getConsumo()) + " L";
         String textoLocalizacao = "Latitude: " + latitude + "\nLongitude: " + longitude;
-        String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidade() * 3.6) + " km/h";
+        String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidadeMedia()) + " km/h";
         String textoDistanciaPercorrida, textoDistanciaTotal;
 
-        if (distanciaPercorrida > 1000) { //Se maior que 1000m, exibe a distância em km
-            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(distanciaPercorrida / 1000) + " km";
+        if (veiculo.getDistanciaPercorrida() > 1000) { //Se maior que 1000m, exibe a distância em km
+            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(veiculo.getDistanciaPercorrida()  / 1000) + " km";
         } else {
-            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(distanciaPercorrida) + " m";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(veiculo.getDistanciaPercorrida() ) + " m";
         }
 
-        if (distanciaTotal > 1000) { //Se maior que 1000m, exibe a distância em km
-            textoDistanciaTotal = "Total\n" + decfor1.format(distanciaTotal / 1000) + " km";
+        if (veiculo.getDistanciaTotal() > 1000) { //Se maior que 1000m, exibe a distância em km
+            textoDistanciaTotal = "Total\n" + decfor1.format(veiculo.getDistanciaTotal() / 1000) + " km";
         } else {
-            textoDistanciaTotal = "Total\n" + decfor2.format(distanciaTotal) + " m";
+            textoDistanciaTotal = "Total\n" + decfor2.format(veiculo.getDistanciaTotal()) + " m";
         }
 
-        campoDistanciaTotal.setText(textoDistanciaTotal);
+        //Atualiza os campos Text View na activity main
         campoLocalizacaoAtual.setText(textoLocalizacao);
-        campoVelocidadeMedia.setText(textoVelocidadeMedia);
         campoDistanciaPercorrida.setText(textoDistanciaPercorrida);
+        campoDistanciaTotal.setText(textoDistanciaTotal);
+        campoVelocidadeMedia.setText(textoVelocidadeMedia);
+        campoVelocidadeRecomendada.setText(textoVelocidadeRecomendada);
+        campoConsumo.setText(textoConsumo);
 
         //Adiciona pin marker no mapa
         if (mMap != null) {
             mMap.clear(); //Limpa marcadores
+
             //Marca a posição atual no mapa
             LatLng localizacao = new LatLng(latitude, longitude);
             mMap.addMarker(new MarkerOptions().position(localizacao).title("Estou aqui"));
@@ -136,7 +135,5 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             LatLng destino = new LatLng(veiculo.getDestino().getLatitude(), veiculo.getDestino().getLongitude());
             mMap.addMarker(new MarkerOptions().position(destino).title("Destino"));
         }
-
     }
-
 }

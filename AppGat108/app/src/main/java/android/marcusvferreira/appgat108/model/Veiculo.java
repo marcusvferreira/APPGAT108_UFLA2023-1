@@ -2,52 +2,45 @@ package android.marcusvferreira.appgat108.model;
 
 import android.location.Location;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Comentar acerca do código...
  */
 public class Veiculo {
-    //Atributos
-    private double velocidade, autonomia, consumo, distanciaPercorrida, tempoTranscorrido;;
-    private int tempoDesejeado;
-    private String modelo;
-    private final Location origem, destino;
 
-    public Veiculo(){ //Construtor
-        origem =  new Location("");
-        destino =  new Location("");
+    //Atributos da classe Veículo
+    private double distanciaPercorrida, distanciaTotal, tempoTranscorrido, tempoDesejeado,
+            velociddadeRecomendada, velocidadeMedia;
+    private List<Double> velocidadesInstantaneas = new ArrayList<>(); //Armazena as velocidades instantâneas obtidas pelo GPS
+    private String modelo; //Modelo do veículo
+    private final Location origem, destino; //Armazenam a origem e o destino do veículo instanciado
+
+    //O construtor instancia dois objetos Location (origem e destino) inicialmente vazio, pois serão
+    //definidos em ControleLocalizacao
+    public Veiculo() {
+        origem = new Location("");
+        destino = new Location("");
+
+
     }
 
-    public double getAutonomia() {
-        return autonomia;
+
+    public double getDistanciaPercorrida() {
+        return distanciaPercorrida;
     }
 
-    public void setAutonomia(double autonomia) {
-        this.autonomia = autonomia;
+    public void setDistanciaPercorrida(double distanciaPercorrida) {
+        this.distanciaPercorrida = distanciaPercorrida;
     }
 
-    public Location getOrigem() {
-        return origem;
+    public double getDistanciaTotal() {
+        return distanciaTotal;
     }
 
-    public Location getDestino() {
-        return destino;
-    }
-
-    //Métodos
-    public double getVelocidade() {
-        return velocidade;
-    }
-
-    public void setVelocidade(double velocidade) {
-        this.velocidade = velocidade;
-    }
-
-    public double getConsumo() {
-        return getConsumoMedio(velocidade);
-    }
-
-    public void setConsumo(double consumo) {
-        this.consumo = consumo;
+    public void setDistanciaTotal(double distanciaTotal) {
+        this.distanciaTotal = distanciaTotal;
     }
 
     public double getTempoTranscorrido() {
@@ -58,58 +51,84 @@ public class Veiculo {
         this.tempoTranscorrido = tempoTranscorrido;
     }
 
-    public int getTempoDesejeado() {
+    public double getTempoDesejeado() {
         return tempoDesejeado;
     }
 
-    public void setTempoDesejeado(int tempoDesejeado) {
+    public void setTempoDesejeado(double tempoDesejeado) {
         this.tempoDesejeado = tempoDesejeado;
     }
 
-    public double getDistanciaPercorrida() {
-        return distanciaPercorrida;
+    public double getVelociddadeRecomendada() {
+        return velociddadeRecomendada;
     }
 
-    public void setDistanciaPercorrida(double distanciaPercorrida) {
-        this.distanciaPercorrida = distanciaPercorrida;
+    public void setVelociddadeRecomendada(double velociddadeRecomendada) {
+        this.velociddadeRecomendada = velociddadeRecomendada;
     }
 
-    public String getModelo() {
-        return modelo;
+    public double getVelocidadeMedia() {
+        return velocidadeMedia;
+    }
+
+    public List<Double> getVelocidadesInstantaneas() {
+        return velocidadesInstantaneas;
     }
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
     }
 
-    //Cálculo para o consumo conforme matéria "O teste da relação entre velocidade e consumo"
+    public Location getOrigem() {
+        return origem;
+    }
+
+    public Location getDestino() {
+        return destino;
+    }
+
+    public void calcularVelocidadeMedia() {
+        if (velocidadesInstantaneas.isEmpty()) {
+            velocidadeMedia = 0;
+        } else {
+            float somaVelocidades = 0;
+            for (double velocidade : velocidadesInstantaneas) {
+                somaVelocidades += velocidade;
+            }
+            velocidadeMedia = somaVelocidades / velocidadesInstantaneas.size();
+        }
+    }
+
+    //Cálculo para o consumo conforme matéria "O teste da relação entre velocidade e consumo". O consumo apresentado
+    //depende do modelo e da velocidade média durante o percurso.
     //Disponível em: https://quatrorodas.abril.com.br/auto-servico/o-teste-da-relacao-entre-velocidade-e-consumo/
-    double getConsumoMedio(double velocidade) {
-        switch (this.modelo) {
+    public double getConsumo() {
+        // consumo = distanciaPercorrida / kmPorLitro;
+        switch (modelo) {
             case "Fox":
-                if (velocidade <= 0) return 0;
-                else if (velocidade <= 80) return 21.1;
-                else if (velocidade <= 100) return 15.6;
+                if (velocidadeMedia <= 0) return 0;
+                else if (velocidadeMedia <= 80) return (distanciaPercorrida / 1000) / 21.1;
+                else if (velocidadeMedia <= 100) return (distanciaPercorrida / 1000) / 15.6;
                 else return 10.4;
             case "Siena":
-                if (velocidade <= 0) return 0;
-                else if (velocidade <= 80) return 14.6;
-                else if (velocidade <= 100) return 12.9;
+                if (velocidadeMedia <= 0) return 0;
+                else if (velocidadeMedia <= 80) return (distanciaPercorrida / 1000) / 14.6;
+                else if (velocidadeMedia <= 100) return (distanciaPercorrida / 1000) / 12.9;
                 else return 8.8;
             case "Fusion":
-                if (velocidade <= 0) return 0;
-                else if (velocidade <= 80) return 21.6;
-                else if (velocidade <= 100) return 15.4;
+                if (velocidadeMedia <= 0) return 0;
+                else if (velocidadeMedia <= 80) return (distanciaPercorrida / 1000) / 21.6;
+                else if (velocidadeMedia <= 100) return (distanciaPercorrida / 1000) / 15.4;
                 else return 10.1;
             case "Azera":
-                if (velocidade <= 0) return 0;
-                else if (velocidade <= 80) return 16.5;
-                else if (velocidade <= 100) return 13.3;
+                if (velocidadeMedia <= 0) return 0;
+                else if (velocidadeMedia <= 80) return (distanciaPercorrida / 1000) / 16.5;
+                else if (velocidadeMedia <= 100) return (distanciaPercorrida / 1000) / 13.3;
                 else return 10.5;
             default:
                 return 0;
         }
     }
-}
 
-//add a uma lista e pegar a cada 100m
+
+}

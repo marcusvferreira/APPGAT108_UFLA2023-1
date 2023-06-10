@@ -14,6 +14,8 @@ import android.marcusvferreira.appgat108.R;
 import android.marcusvferreira.appgat108.controller.ControleLocalizacao;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -41,31 +43,24 @@ import java.util.TimerTask;
  */
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
 
-    private static final DecimalFormat decfor = new DecimalFormat("0.00");
+    //private static final DecimalFormat decfor = new DecimalFormat("0.00");
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    GoogleMap mMap;
-
-    //Objetos para controlar os campos TextView
-    TextView campoTempoTranscorrido;
-
-    //Objetos para controlar os botões
-    Button btnIniciar, btnSelecionarTempo;
+    private GoogleMap mMap;
+    private TextView campoTempoTranscorrido; //Objeto para controlar o campo TextView do tempo transcorrido
+    private Button btnIniciar, btnSelecionarTempo; //Objetos para controlar os botões 'iniciar' e 'selecione o tempo'
 
     //Objetos e variáveis para controle do timer
     Timer timer;
     TimerTask timerTask;
-    //Double tempoTranscorrido = 0.0;
-    int horasSelecionada, minutosSelecionado;
+
+    private int horasSelecionada, minutosSelecionado;
     private boolean isTimerIniciado = false; //Controla se o timer foi iniciado
     private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
-
-    //Criação do obejto veículo
-    Veiculo veiculo = new Veiculo();
+    private Veiculo veiculo; //Declaração do objeto veículo
 
     // private TextView campoLocalizacaoAtual;
     private ControleLocalizacao controleLocalizacao;
-
-    Fragment mapa;
+    private Fragment mapa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +74,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
         btnIniciar = findViewById(R.id.btn_iniciar);
+
         timer = new Timer();
-        controleLocalizacao = new ControleLocalizacao(this, this, veiculo);
+        veiculo = new Veiculo();
+        controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()));
 
         Spinner opcaoVeiculos = findViewById(R.id.spinner_veiculos);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opcaoVeiculos, android.R.layout.simple_spinner_item);
@@ -130,11 +127,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-        } else{
+        } else {
             Toast.makeText(this, "Selecione o tempo desejado para o percurso!", Toast.LENGTH_LONG).show();
         }
     }
-
 
     //Método responsável pelo controle do timer
     private void iniciarTimer() {
@@ -175,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         horasSelecionada, minutosSelecionado));
                 btnSelecionarTempo.setTextSize(14);
                 isTempoDesejadoSelecionado = true;
-                veiculo.setTempoDesejeado(minutos + horas * 60); //Passa para veículo o tempo selecionado em min
+                veiculo.setTempoDesejeado((double) minutosSelecionado / 60 + horasSelecionada); //Passa para veículo o tempo selecionado em hrs
             }
         };
         @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -191,14 +187,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         veiculo.setModelo(parent.getItemAtPosition(position).toString());
     }
 
-    //Método referente ao Spinner opcaoVeiculos (apesar de vazio para a necessidade da implementação
-    //feita, é obrigatório)
+    //Método referente ao Spinner opcaoVeiculos (apesar de vazio para a necessidade da implementação feita, é obrigatório)
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
-    //Método referente à atualização da view map
+    //Método referente à atualização do mapa
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;

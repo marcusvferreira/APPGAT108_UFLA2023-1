@@ -206,13 +206,13 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <TextView
-            android:id="@+id/tv_combustivel"
+            android:id="@+id/tv_veiculo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/black"
             android:gravity="center"
             android:padding="5dp"
-            android:text="Combustível"
+            android:text="Veículo"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -235,36 +235,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_combustivel"
+            app:layout_constraintTop_toBottomOf="@+id/tv_veiculo"
             app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
-            android:id="@+id/tv_autonomia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Veículo"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.83"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_combustivel" />
-
         <ImageView
-            android:id="@+id/img_combustivel"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/img_veiculo"
+            android:layout_width="31dp"
+            android:layout_height="31dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="1dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/fuel" />
+            app:srcCompat="@drawable/veiculo" />
 
         <Spinner
             android:id="@+id/spinner_veiculos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="1dp"
             android:spinnerMode="dialog"
             android:textAlignment="center"
@@ -272,7 +260,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.9"
             app:layout_constraintStart_toEndOf="@+id/tv_consumo"
-            app:layout_constraintTop_toBottomOf="@+id/tv_autonomia"
+            app:layout_constraintTop_toBottomOf="@+id/tv_veiculo"
             tools:ignore="TouchTargetSizeCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
