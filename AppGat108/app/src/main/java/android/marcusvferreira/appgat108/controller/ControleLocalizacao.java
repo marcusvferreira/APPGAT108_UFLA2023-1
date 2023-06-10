@@ -1,8 +1,8 @@
 package android.marcusvferreira.appgat108.controller;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,7 +11,6 @@ import android.marcusvferreira.appgat108.model.Veiculo;
 import android.marcusvferreira.appgat108.view.MainActivity;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,7 +19,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DecimalFormat;
-import java.util.Random;
 
 /**
  * Comentar acerca do código...
@@ -30,26 +28,28 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); //Converter os valores para formato decimal
     private static final DecimalFormat decfor2 = new DecimalFormat("#"); //Converter os valores para formato sem casas decimais
     private final Context context;
+    private final MainActivity activity;
     private final Handler handler;
     private GoogleMap mMap;
     private boolean isOrigemObtida = false;
     private final Veiculo veiculo;
-    private Thread thread;
 
     //Objetos para manipular os campos TextView presentes na activity main
-    private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoLocalizacaoAtual,
-            campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
+    private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoVelocidadeAtual,
+            campoLocalizacaoAtual, campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
 
     //Construtor
-    public ControleLocalizacao(Activity activity, Context context, Veiculo veiculo, Handler handler) {
+    public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler) {
         this.context = context;
         this.veiculo = veiculo;
         this.handler = handler;
+        this.activity = activity;
 
         TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
         campoLocalizacaoAtual = activity.findViewById(R.id.tv_loc_atual_dados);
         campoVelocidadeMedia = activity.findViewById(R.id.tv_velocidade_media);
         campoVelocidadeRecomendada = activity.findViewById(R.id.tv_velocidade_recomendada);
+        campoVelocidadeAtual = activity.findViewById(R.id.tv_velocidade_atual);
         campoDistanciaTotal = activity.findViewById(R.id.tv_distancia_total);
         campoDistanciaPercorrida = activity.findViewById(R.id.tv_distancia_percorrida);
         campoConsumo = activity.findViewById(R.id.tv_consumo);
@@ -60,8 +60,9 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         String textoDestino = "Latitude: " + veiculo.getDestino().getLatitude() + "\nLongitude: "
                 + veiculo.getDestino().getLongitude();
         campoLocalizacaoDestino.setText(textoDestino);
-        this.thread = new Thread(this); // instancia a thread
-        this.thread.start();
+
+        Thread thread = new Thread(this); // instancia a thread
+        thread.start();
     }
 
     public void setmMap(GoogleMap mMap) {
@@ -71,12 +72,20 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     @SuppressLint("MissingPermission")
     @Override
     public void run() {
-        Looper.prepare();
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
-        }
-        Looper.loop();
+
+       if(activity.isTimerIniciado){
+            Looper.prepare();
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
+            }
+            Looper.loop();
+
+
+
+       }
+
+
     }
 
     //Método responsável por atualizar os dados qnd haver mudança na localização
@@ -91,15 +100,28 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             veiculo.setDistanciaTotal(location.distanceTo(veiculo.getDestino()));
         }
 
-        Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
-        thread.start();
+        if(activity.isTimerIniciado) {
+            Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
+            thread.start();
+        }
+/*
+        }else{
+            Toast.makeText(activity, "Você chegou ao destino!", Toast.LENGTH_LONG).show();
+        }*/
     }
 
-    public void atualizarLocalizacao(double latitude, double longitude) {
+    public void atualizarLocalizacao(double latitude, double longitude, double distanciaRestante) {
+
+       // if(distanciaRestante <=0.0001){
+       //     activity.pausarTimer();
+       // }
+
+
         String textoVelocidadeRecomendada = "Recomendada\n" + decfor1.format(veiculo.getVelociddadeRecomendada()) + " km/h";
+        String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidadeMedia()) + " km/h";
+        String textoVelocidadeAtual = "Atual\n" + decfor1.format(veiculo.getVelocidadeAtual()) + " km/h";
         String textoConsumo = "Consumo\n" + decfor1.format(veiculo.getConsumo()) + " L";
         String textoLocalizacao = "Latitude: " + latitude + "\nLongitude: " + longitude;
-        String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidadeMedia()) + " km/h";
         String textoDistanciaPercorrida, textoDistanciaTotal;
 
         if (veiculo.getDistanciaPercorrida() > 1000) { //Se maior que 1000m, exibe a distância em km
@@ -120,7 +142,11 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         campoDistanciaTotal.setText(textoDistanciaTotal);
         campoVelocidadeMedia.setText(textoVelocidadeMedia);
         campoVelocidadeRecomendada.setText(textoVelocidadeRecomendada);
+        campoVelocidadeAtual.setText(textoVelocidadeAtual);
         campoConsumo.setText(textoConsumo);
+        if(veiculo.getVelocidadeAtual() < veiculo.getVelociddadeRecomendada()){
+            campoVelocidadeAtual.setTextColor(Color.RED);
+        }
 
         //Adiciona pin marker no mapa
         if (mMap != null) {

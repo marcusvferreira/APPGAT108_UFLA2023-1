@@ -1,13 +1,8 @@
 package android.marcusvferreira.appgat108.view;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.MediaRouteButton;
 import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.marcusvferreira.appgat108.R;
@@ -23,17 +18,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //private static final DecimalFormat decfor = new DecimalFormat("0.00");
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private GoogleMap mMap;
+    //private GoogleMap mMap;
     private TextView campoTempoTranscorrido; //Objeto para controlar o campo TextView do tempo transcorrido
     private Button btnIniciar, btnSelecionarTempo; //Objetos para controlar os botões 'iniciar' e 'selecione o tempo'
 
@@ -54,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     TimerTask timerTask;
 
     private int horasSelecionada, minutosSelecionado;
-    private boolean isTimerIniciado = false; //Controla se o timer foi iniciado
+    public boolean isTimerIniciado = false; //Controla se o timer foi iniciado
     private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
     private Veiculo veiculo; //Declaração do objeto veículo
 
@@ -137,19 +132,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        veiculo.setTempoTranscorrido(veiculo.getTempoTranscorrido() + 1);
-                        campoTempoTranscorrido.setText("Transcorrido\n" + getTimerText());
-                    }
+                runOnUiThread(() -> {
+                    veiculo.setTempoTranscorrido(veiculo.getTempoTranscorrido() + 1);
+                    campoTempoTranscorrido.setText("Transcorrido\n" + getTimerText());
                 });
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        isTimerIniciado = true;
+    }
+
+    public void pausarTimer() {
+        if (isTimerIniciado && timerTask != null) {
+            timerTask.cancel();
+            isTimerIniciado = false;
+        }
     }
 
     //Realiza as conversões para obter o tempo em hrs, min e seg
+    @SuppressLint("DefaultLocale")
     private String getTimerText() {
         int rounded = (int) Math.round(veiculo.getTempoTranscorrido());
         int segundos = ((rounded % 86400) % 3600) % 60;
@@ -162,17 +163,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Implementa a funcionalidade do botão de selecionar o tempo desejado
     public void clickSelecionarTempo(View view) {
-        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int horas, int minutos) {
-                horasSelecionada = horas;
-                minutosSelecionado = minutos;
-                btnSelecionarTempo.setText(String.format(Locale.getDefault(), "%02d:%02d",
-                        horasSelecionada, minutosSelecionado));
-                btnSelecionarTempo.setTextSize(14);
-                isTempoDesejadoSelecionado = true;
-                veiculo.setTempoDesejeado((double) minutosSelecionado / 60 + horasSelecionada); //Passa para veículo o tempo selecionado em hrs
-            }
+        TimePickerDialog.OnTimeSetListener onTimeSetListener = (view1, horas, minutos) -> {
+            horasSelecionada = horas;
+            minutosSelecionado = minutos;
+            btnSelecionarTempo.setText(String.format(Locale.getDefault(), "%02d:%02d",
+                    horasSelecionada, minutosSelecionado));
+            btnSelecionarTempo.setTextSize(14);
+            isTempoDesejadoSelecionado = true;
+            veiculo.setTempoDesejeado((double) minutosSelecionado / 60 + horasSelecionada); //Passa para veículo o tempo selecionado em hrs
         };
         @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(
                 this, AlertDialog.THEME_HOLO_DARK, onTimeSetListener, horasSelecionada,
@@ -195,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     //Método referente à atualização do mapa
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+      //  mMap = googleMap;
         controleLocalizacao.setmMap(googleMap);
     }
 }
