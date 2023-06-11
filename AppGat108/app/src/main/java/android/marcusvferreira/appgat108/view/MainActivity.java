@@ -34,13 +34,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Comentar acerca do código...
+ * A classe MainActivity é a atividade principal do aplicativo, controlando a interface do usuário.
  */
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
 
-    //private static final DecimalFormat decfor = new DecimalFormat("0.00");
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    //private GoogleMap mMap;
     private TextView campoTempoTranscorrido; //Objeto para controlar o campo TextView do tempo transcorrido
     private Button btnIniciar, btnSelecionarTempo; //Objetos para controlar os botões 'iniciar' e 'selecione o tempo'
 
@@ -85,6 +83,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mapFragment.getMapAsync(this);
     }
 
+    /**
+     * Inicia a obtenção da localização atual do dispositivo.
+     * Verifica se as permissões necessárias foram concedidas.
+     * Se as permissões de localização não foram concedidas, solicita ao usuário.
+     * Caso contrário, inicia o controle de localização via thread.
+     */
     private void iniciarObtencaoLocalizacao() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
@@ -94,12 +98,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
-            //Se as permissões de localização foram concendidas, inicia o controle de localização via thread
             Thread thread = new Thread(controleLocalizacao);
             thread.start();
         }
     }
 
+    /**
+     * Trata a resposta do usuário em relação às permissões solicitadas.
+     * Se as permissões de localização foram concedidas, inicia a obtenção da localização.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -110,7 +117,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    //Método resposável pela resposta ao click do usuário no button INICIAR
+
+    /**
+     * Resposta ao clique do usuário no botão 'Iniciar'.
+     * Verifica se o tempo desejado para o percurso foi selecionado.
+     * Se o tempo desejado foi selecionado, inicia o timer e a obtenção da localização.
+     * Define a visibilidade do mapa como visível.
+     */
     public void clickIniciar(View view) {
         if (isTempoDesejadoSelecionado) {
             btnIniciar.setVisibility(View.INVISIBLE); //Define a visibilidade do botão como invisível
@@ -127,7 +140,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    //Método responsável pelo controle do timer
+    /**
+     * Inicia o timer para contar o tempo transcorrido do percurso.
+     * Atualiza o tempo transcorrido a cada segundo.
+     */
     private void iniciarTimer() {
         timerTask = new TimerTask() {
             @Override
@@ -142,6 +158,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         isTimerIniciado = true;
     }
 
+    /**
+     * Pausa o timer, cancelando a tarefa programada.
+     */
     public void pausarTimer() {
         if (isTimerIniciado && timerTask != null) {
             timerTask.cancel();
@@ -149,7 +168,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    //Realiza as conversões para obter o tempo em hrs, min e seg
+    /**
+     * Obtém o texto formatado para exibir o tempo transcorrido.
+     * Realiza as conversões necessárias para obter o tempo em horas, minutos e segundos.
+     * Retorna o tempo formatado como uma string.
+     */
     @SuppressLint("DefaultLocale")
     private String getTimerText() {
         int rounded = (int) Math.round(veiculo.getTempoTranscorrido());
@@ -161,7 +184,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String.format("%02d", segundos);
     }
 
-    //Implementa a funcionalidade do botão de selecionar o tempo desejado
+    /**
+     * Resposta ao clique do usuário no botão 'Selecionar Tempo'.
+     * Exibe um dialog de seleção de tempo.
+     * O tempo selecionado é armazenado na variável 'horasSelecionada' e 'minutosSelecionado'.
+     * Define o tempo selecionado no botão 'Selecionar Tempo' e marca a flag 'isTempoDesejadoSelecionado' como true.
+     * Passa o tempo selecionado para o objeto veículo.
+     */
     public void clickSelecionarTempo(View view) {
         TimePickerDialog.OnTimeSetListener onTimeSetListener = (view1, horas, minutos) -> {
             horasSelecionada = horas;
@@ -179,21 +208,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timePickerDialog.show();
     }
 
-    //Método referente ao Spinner opcaoVeiculos
+    /**
+     * Implementação do método da interface AdapterView.OnItemSelectedListener.
+     * Obtém o modelo de veículo selecionado pelo usuário no spinner 'opcaoVeiculos' e armazena no objeto veículo.
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         veiculo.setModelo(parent.getItemAtPosition(position).toString());
     }
 
-    //Método referente ao Spinner opcaoVeiculos (apesar de vazio para a necessidade da implementação feita, é obrigatório)
+    /**
+     * Implementação do método da interface AdapterView.OnItemSelectedListener.
+     * Método vazio, pois não é necessário nenhuma ação quando nada é selecionado.
+     */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
-    //Método referente à atualização do mapa
+    /**
+     * Implementação do método da interface OnMapReadyCallback.
+     * Atualiza o mapa com a instância do GoogleMap recebida como parâmetro.
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-      //  mMap = googleMap;
+        //  mMap = googleMap;
         controleLocalizacao.setmMap(googleMap);
     }
 }

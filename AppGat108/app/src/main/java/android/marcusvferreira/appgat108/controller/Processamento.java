@@ -31,8 +31,13 @@ public class Processamento implements Runnable {
         double tempoDesejado = veiculo.getTempoDesejeado(); //Tempo desejado já é retornado em hrs
         double tempoTranscorrido = veiculo.getTempoTranscorrido() / 3600; //Tempo transcorrido é retornado em seg, portanto o converte para hrs
         double tempoRestante = tempoDesejado - tempoTranscorrido;
-        double distanciaRestante = (veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida()) / 1000; //Distância restante em km
-        veiculo.setVelociddadeRecomendada(distanciaRestante / tempoRestante);
+        double distanciaRestante = (veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida()); //Distância restante em m
+        double velocidadeRecomendada = (distanciaRestante / 1000) / tempoRestante;
+        if (velocidadeRecomendada > 0) {
+            veiculo.setVelociddadeRecomendada(velocidadeRecomendada);
+        } else {
+            veiculo.setVelociddadeRecomendada(0.0);
+        }
 
         //Armazena os parâmetros latitude e longitude para atualizar o campo localização atual
         double latitude = location.getLatitude();

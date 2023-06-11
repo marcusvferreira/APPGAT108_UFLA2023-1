@@ -12,6 +12,7 @@ import android.marcusvferreira.appgat108.view.MainActivity;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,30 +22,42 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.DecimalFormat;
 
 /**
- * Comentar acerca do código...
+ * Controla a obtenção e atualização da localização do veículo.
  */
 public class ControleLocalizacao implements Runnable, LocationListener {
 
-    private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); //Converter os valores para formato decimal
-    private static final DecimalFormat decfor2 = new DecimalFormat("#"); //Converter os valores para formato sem casas decimais
+    // Formato do numerais para exibição dos valores
+    private static final DecimalFormat decfor1 = new DecimalFormat("0.00"); // Converter os valores para formato decimal
+    private static final DecimalFormat decfor2 = new DecimalFormat("#"); // Converter os valores para formato sem casas decimais
+
+    // Contexto e activity relacionados à localização
     private final Context context;
     private final MainActivity activity;
-    private final Handler handler;
+
+    private final Handler handler; // Manipulador da interface de usuário
     private GoogleMap mMap;
-    private boolean isOrigemObtida = false;
+    private boolean isOrigemObtida = false; // Indica se a origem foi obtida
     private final Veiculo veiculo;
 
-    //Objetos para manipular os campos TextView presentes na activity main
+    // Campos TextView na interface de usuário
     private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoVelocidadeAtual,
             campoLocalizacaoAtual, campoDistanciaTotal, campoDistanciaPercorrida, campoConsumo;
 
-    //Construtor
+    /**
+     * Construtor da classe.
+     *
+     * @param activity Atividade principal
+     * @param context  Contexto da aplicação
+     * @param veiculo  Objeto do veículo
+     * @param handler  Manipulador da interface de usuário
+     */
     public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler) {
         this.context = context;
         this.veiculo = veiculo;
         this.handler = handler;
         this.activity = activity;
 
+        // Inicializa os campos TextView na main activity
         TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
         campoLocalizacaoAtual = activity.findViewById(R.id.tv_loc_atual_dados);
         campoVelocidadeMedia = activity.findViewById(R.id.tv_velocidade_media);
@@ -61,38 +74,45 @@ public class ControleLocalizacao implements Runnable, LocationListener {
                 + veiculo.getDestino().getLongitude();
         campoLocalizacaoDestino.setText(textoDestino);
 
-        Thread thread = new Thread(this); // instancia a thread
+        // Inicia uma nova thread para executar o código de controle de localização
+        Thread thread = new Thread(this);
         thread.start();
     }
 
+    /**
+     * Define o mapa do Google.
+     *
+     * @param mMap Mapa do Google
+     */
     public void setmMap(GoogleMap mMap) {
         this.mMap = mMap;
     }
 
+    /**
+     * Método executado pela thread para iniciar o controle de localização.
+     */
     @SuppressLint("MissingPermission")
     @Override
     public void run() {
-
-       if(activity.isTimerIniciado){
+        if (activity.isTimerIniciado) {
             Looper.prepare();
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             if (locationManager != null) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
             }
             Looper.loop();
-
-
-
-       }
-
-
+        }
     }
 
-    //Método responsável por atualizar os dados qnd haver mudança na localização
+    /**
+     * Método chamado quando há uma mudança na localização do dispositivo.
+     *
+     * @param location Nova localização
+     */
     @Override
     public void onLocationChanged(Location location) {
-        // Verifica se a origem ainda não foi definida. Armazena a primeira localização lida como origem
-        // e calcula a distância total do percurso
+        // Verifica se a origem ainda não foi definida.
+        // Armazena a primeira localização lida como origem e calcula a distância total do percurso
         if (!isOrigemObtida) {
             isOrigemObtida = true;
             veiculo.getOrigem().setLatitude(location.getLatitude());
@@ -100,23 +120,35 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             veiculo.setDistanciaTotal(location.distanceTo(veiculo.getDestino()));
         }
 
-        if(activity.isTimerIniciado) {
+        if (activity.isTimerIniciado) {
+            // Inicia uma nova thread para processar os dados de localização
             Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
             thread.start();
         }
-/*
-        }else{
-            Toast.makeText(activity, "Você chegou ao destino!", Toast.LENGTH_LONG).show();
-        }*/
     }
 
+    /**
+     * Atualiza os dados relacionados na interface de usuário.
+     *
+     * @param latitude          Latitude atual
+     * @param longitude         Longitude atual
+     * @param distanciaRestante Distância restante até o destino
+     */
     public void atualizarLocalizacao(double latitude, double longitude, double distanciaRestante) {
 
-       // if(distanciaRestante <=0.0001){
-       //     activity.pausarTimer();
-       // }
+        // Verifica se a distância restante é menor ou igual a 15 metros, indicando que o destino foi alcançado
+        // 15 metros é para tratar alguma possível imprecisão do sinal
+        if (distanciaRestante <= 15) {
+            activity.pausarTimer(); // Pausa o timer na MainActivity
+            Toast.makeText(activity, "Chegou ao destino!", Toast.LENGTH_LONG).show();
+        }
+        // Verifica se o tempo transcorrido em é maior que o tempo desejado para chegar ao destino
+        else if (veiculo.getTempoTranscorrido() / 3600 > veiculo.getTempoDesejeado()) {
+            activity.pausarTimer(); // Pausa o timer na MainActivity
+            Toast.makeText(activity, "Não chegou ao destino!", Toast.LENGTH_LONG).show();
+        }
 
-
+        // Formatação dos dados para exibição
         String textoVelocidadeRecomendada = "Recomendada\n" + decfor1.format(veiculo.getVelociddadeRecomendada()) + " km/h";
         String textoVelocidadeMedia = "Média\n" + decfor1.format(veiculo.getVelocidadeMedia()) + " km/h";
         String textoVelocidadeAtual = "Atual\n" + decfor1.format(veiculo.getVelocidadeAtual()) + " km/h";
@@ -125,9 +157,9 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         String textoDistanciaPercorrida, textoDistanciaTotal;
 
         if (veiculo.getDistanciaPercorrida() > 1000) { //Se maior que 1000m, exibe a distância em km
-            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(veiculo.getDistanciaPercorrida()  / 1000) + " km";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor1.format(veiculo.getDistanciaPercorrida() / 1000) + " km";
         } else {
-            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(veiculo.getDistanciaPercorrida() ) + " m";
+            textoDistanciaPercorrida = "Percorrida\n" + decfor2.format(veiculo.getDistanciaPercorrida()) + " m";
         }
 
         if (veiculo.getDistanciaTotal() > 1000) { //Se maior que 1000m, exibe a distância em km
@@ -136,7 +168,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             textoDistanciaTotal = "Total\n" + decfor2.format(veiculo.getDistanciaTotal()) + " m";
         }
 
-        //Atualiza os campos Text View na activity main
+        // Atualiza os campos TextView na MainActivity com os textos formatados
         campoLocalizacaoAtual.setText(textoLocalizacao);
         campoDistanciaPercorrida.setText(textoDistanciaPercorrida);
         campoDistanciaTotal.setText(textoDistanciaTotal);
@@ -144,13 +176,15 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         campoVelocidadeRecomendada.setText(textoVelocidadeRecomendada);
         campoVelocidadeAtual.setText(textoVelocidadeAtual);
         campoConsumo.setText(textoConsumo);
-        if(veiculo.getVelocidadeAtual() < veiculo.getVelociddadeRecomendada()){
-            campoVelocidadeAtual.setTextColor(Color.RED);
+
+        // Verifica se a velocidade atual do veículo é menor que a velocidade recomendada
+        if (veiculo.getVelocidadeAtual() < veiculo.getVelociddadeRecomendada()) {
+            campoVelocidadeAtual.setTextColor(Color.RED); // Altera a cor do texto da velocidade atual para vermelho
         }
 
-        //Adiciona pin marker no mapa
+        // Limpa os marcadores existentes no mapa e adiciona um novo marcador para a posição atual e o destino
         if (mMap != null) {
-            mMap.clear(); //Limpa marcadores
+            mMap.clear(); //Limpa os marcadores existentes
 
             //Marca a posição atual no mapa
             LatLng localizacao = new LatLng(latitude, longitude);
