@@ -63,11 +63,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         mapa = getSupportFragmentManager().findFragmentById(R.id.map);
         mapa.getView().setVisibility(View.INVISIBLE); //Define o mapa como invisível ao iniciar
-
         btnSelecionarTempo = findViewById(R.id.btn_selecionar_tempo);
         campoTempoTranscorrido = findViewById(R.id.tv_tempo_transcorrido);
         btnIniciar = findViewById(R.id.btn_iniciar);
-
         timer = new Timer();
         veiculo = new Veiculo();
         controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()));
@@ -98,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
-            Thread thread = new Thread(controleLocalizacao);
-            thread.start();
+            controleLocalizacao.thread = new Thread(controleLocalizacao);
+            controleLocalizacao.thread.start();
         }
     }
 
@@ -231,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        //  mMap = googleMap;
         controleLocalizacao.setmMap(googleMap);
     }
 }

@@ -33,6 +33,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     // Contexto e activity relacionados à localização
     private final Context context;
     private final MainActivity activity;
+    public Thread thread;
 
     private final Handler handler; // Manipulador da interface de usuário
     private GoogleMap mMap;
@@ -73,10 +74,6 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         String textoDestino = "Latitude: " + veiculo.getDestino().getLatitude() + "\nLongitude: "
                 + veiculo.getDestino().getLongitude();
         campoLocalizacaoDestino.setText(textoDestino);
-
-        // Inicia uma nova thread para executar o código de controle de localização
-        Thread thread = new Thread(this);
-        thread.start();
     }
 
     /**
@@ -180,6 +177,8 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         // Verifica se a velocidade atual do veículo é menor que a velocidade recomendada
         if (veiculo.getVelocidadeAtual() < veiculo.getVelociddadeRecomendada()) {
             campoVelocidadeAtual.setTextColor(Color.RED); // Altera a cor do texto da velocidade atual para vermelho
+        }else{
+            campoVelocidadeAtual.setTextColor(Color.BLACK); // Caso contrário a cor do texto da velocidade atual continua preto
         }
 
         // Limpa os marcadores existentes no mapa e adiciona um novo marcador para a posição atual e o destino
