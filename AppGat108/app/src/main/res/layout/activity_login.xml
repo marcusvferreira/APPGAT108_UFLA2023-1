@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bluePadraoApp"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/id_icon"
+    android:scaleType="centerCrop"
+    android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:id="@+id/et_nomeMotorista"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Nome de usuário" />
+
+    <EditText
+        android:id="@+id/et_senha"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Senha"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selecione a carga transportada:"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
+
+    <RadioGroup
+        android:id="@+id/rg_cargas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rb_carga1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Café" />
+
+        <RadioButton
+            android:id="@+id/rb_carga2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cana-de-açúcar" />
+
+        <RadioButton
+            android:id="@+id/rb_carga3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Milho" />
+
+        <RadioButton
+            android:id="@+id/rb_carga4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Soja" />
+
+        <RadioButton
+            android:id="@+id/rb_carga5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sem carga (vazio)" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="clickLogin"
+        android:text="Login" />
+
+</LinearLayout>

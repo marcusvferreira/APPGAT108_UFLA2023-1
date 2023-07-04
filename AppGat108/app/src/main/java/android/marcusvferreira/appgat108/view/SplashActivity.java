@@ -20,14 +20,14 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mudarParaActivityMain();
+                mudarParaLoginActivity();
             }
         }, TEMPO_TELA_SPLASH);
     }
 
-    private void mudarParaActivityMain() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(intent); //Inicializa a activity main
+    private void mudarParaLoginActivity() {
+        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+        startActivity(intent); //Inicializa a activity do login
         finish(); //Finaliza a activity splash
     }
 }
