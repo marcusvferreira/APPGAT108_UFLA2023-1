@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.marcusvferreira.appgat108.model.Motorista;
+import android.marcusvferreira.appgat108.model.Servico;
 import android.os.Bundle;
 import android.marcusvferreira.appgat108.R;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,17 +21,21 @@ public class LoginActivity extends AppCompatActivity {
     private EditText campoNome, campoSenha;
     private RadioGroup rgCargas;
     private boolean isLoginEfetuado = false;
-    private List<Motorista> motoristas = new ArrayList<>();
+    private String cargaSelecionada;
+    private Servico servico;
+    private final List<Motorista> listaMotoristas = new ArrayList<>();
+    private MainActivity mainActivity;
+    // fazer o motoristo logado
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        motoristas.add(new Motorista("Marcus", "m123"));
-        motoristas.add(new Motorista("Rafael", "r123"));
-        motoristas.add(new Motorista("Giovanna", "g123"));
-        motoristas.add(new Motorista("Enrique", "e123"));
+        listaMotoristas.add(new Motorista("", ""));
+        listaMotoristas.add(new Motorista("Rafael", "r123"));
+        listaMotoristas.add(new Motorista("Giovanna", "g123"));
+        listaMotoristas.add(new Motorista("Enrique", "e123"));
 
         campoNome = findViewById(R.id.et_nomeMotorista);
         campoSenha = findViewById(R.id.et_senha);
@@ -41,22 +45,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rgSelecionado = findViewById(checkedId);
-                String cargaSelecionada = rgSelecionado.getText().toString();
-
-                // Faça algo com a carga selecionada
+                cargaSelecionada = rgSelecionado.getText().toString();
             }
         });
 
     }
 
-
     public void clickLogin(View view) {
+        String nome = campoNome.getText().toString().trim(); // nome de usuário inserido pelo usuário
+        String senha = campoSenha.getText().toString().trim(); // senha inserida pelo usuário
 
-        String nome = campoNome.getText().toString(); // nome de usuário inserido pelo usuário
-        String senha = campoSenha.getText().toString(); // senha inserida pelo usuário
-
-        for (Motorista motorista : motoristas) {
-
+        for (Motorista motorista : listaMotoristas) {
             if (motorista.getNome().equalsIgnoreCase(nome) && motorista.getSenha().equals(senha)) {
                 isLoginEfetuado = true; // Se as credenciais correspondem a um motorista válido, então o login é validado
                 break;
@@ -64,6 +63,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (isLoginEfetuado) {
+            int idServico = (int) (Math.random() * 100); // Gera um número aleatório para identificar o serviço
+            servico = new Servico(idServico, cargaSelecionada, nome);
+
             // Exibe uma mensagem de login bem-sucedido
             Toast.makeText(this, "Login realizado com sucesso", Toast.LENGTH_SHORT).show();
             mudarParaActivityMain();
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void mudarParaActivityMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("servico", servico);
         startActivity(intent); //Inicializa a activity main
         finish(); //Finaliza a login activity
     }

@@ -4,9 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.marcusvferreira.appgat108.R;
 import android.marcusvferreira.appgat108.controller.ControleLocalizacao;
+import android.marcusvferreira.appgat108.model.Servico;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,11 +58,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private ControleLocalizacao controleLocalizacao;
     private Fragment mapa;
 
+    private Servico servico;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);// Mantém a tela ligada
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("servico")) {
+            servico = intent.getParcelableExtra("servico");
+        }
 
         mapa = getSupportFragmentManager().findFragmentById(R.id.map);
         mapa.getView().setVisibility(View.INVISIBLE); //Define o mapa como invisível ao iniciar
@@ -69,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timer = new Timer();
         veiculo = new Veiculo();
         controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()));
+
+
+
 
         Spinner opcaoVeiculos = findViewById(R.id.spinner_veiculos);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opcaoVeiculos, android.R.layout.simple_spinner_item);
@@ -127,6 +141,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             btnIniciar.setVisibility(View.INVISIBLE); //Define a visibilidade do botão como invisível
             Toast.makeText(this, "Percurso iniciado. Boa viagem!", Toast.LENGTH_LONG).show();
             iniciarTimer();
+            servico.setDataHoraInicio(LocalDateTime.now());
+            servico.setVeiculo(veiculo);
+
             iniciarObtencaoLocalizacao();
             mapa.getView().setVisibility(View.VISIBLE); //Define o mapa como visível
 

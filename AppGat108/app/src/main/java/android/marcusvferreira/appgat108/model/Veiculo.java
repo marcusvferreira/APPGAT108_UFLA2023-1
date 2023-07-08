@@ -19,7 +19,7 @@ public class Veiculo {
     private double distanciaPercorrida, distanciaTotal, tempoTranscorrido, tempoDesejeado,
             velociddadeRecomendada, velocidadeMedia;
     private final List<Double> velocidadesInstantaneas = new ArrayList<>(); // Armazena as velocidades instantâneas obtidas pelo GPS
-    private String modelo; // Modelo do veículo
+    private String modelo, carga; // Modelo do veículo
     private final Location origem, destino; // Armazenam a origem e o destino do veículo instanciado
 
     // O construtor instancia dois objetos Location (origem e destino) inicialmente vazio, pois serão definidos em ControleLocalizacao
