@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.marcusvferreira.appgat108.R;
+import android.marcusvferreira.appgat108.model.Servico;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.marcusvferreira.appgat108.view.MainActivity;
 import android.os.Handler;
@@ -33,12 +34,13 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     // Contexto e activity relacionados à localização
     private final Context context;
     private final MainActivity activity;
-    public Thread thread;
+    //public Thread thread;
 
     private final Handler handler; // Manipulador da interface de usuário
     private GoogleMap mMap;
     private boolean isOrigemObtida = false; // Indica se a origem foi obtida
     private final Veiculo veiculo;
+    private final Servico servico;
 
     // Campos TextView na interface de usuário
     private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoVelocidadeAtual,
@@ -51,12 +53,14 @@ public class ControleLocalizacao implements Runnable, LocationListener {
      * @param context  Contexto da aplicação
      * @param veiculo  Objeto do veículo
      * @param handler  Manipulador da interface de usuário
+     * @param servico
      */
-    public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler) {
+    public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler, Servico servico) {
         this.context = context;
         this.veiculo = veiculo;
         this.handler = handler;
         this.activity = activity;
+        this.servico = servico;
 
         // Inicializa os campos TextView na main activity
         TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
@@ -121,6 +125,11 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             // Inicia uma nova thread para processar os dados de localização
             Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
             thread.start();
+
+
+            Thread threadFireBase = new Thread(servico);
+            threadFireBase.start();
+
         }
     }
 

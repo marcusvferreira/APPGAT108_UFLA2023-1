@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnIniciar = findViewById(R.id.btn_iniciar);
         timer = new Timer();
         veiculo = new Veiculo();
-        controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()));
+        controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()), servico);
 
 
 
@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
-            controleLocalizacao.thread = new Thread(controleLocalizacao);
-            controleLocalizacao.thread.start();
+            Thread threadControleLocalizacao = new Thread(controleLocalizacao);
+            threadControleLocalizacao.start();
         }
     }
 
