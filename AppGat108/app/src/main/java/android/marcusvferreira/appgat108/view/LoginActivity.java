@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity {
                 cargaSelecionada = rgSelecionado.getText().toString();
             }
         });
-
     }
 
     public void clickLogin(View view) {

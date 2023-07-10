@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 
 public class Servico implements Parcelable, Runnable {
     private final int id;
-    private  LocalDateTime dataHoraInicio;
-    private LocalDateTime dataHoraFim;
     private final String carga, nomeMotorista;
-   // private final Motorista motorista;
+    private LocalDateTime dataHoraInicio, dataHoraFim;
     private Veiculo veiculo;
 
     public Servico(int id, String carga, String nomeMotorista) {
@@ -53,6 +51,10 @@ public class Servico implements Parcelable, Runnable {
 
     public void setVeiculo(Veiculo veiculo) {
         this.veiculo = veiculo;
+    }
+
+    public String getNomeMotorista() {
+        return nomeMotorista;
     }
 
     @Override
