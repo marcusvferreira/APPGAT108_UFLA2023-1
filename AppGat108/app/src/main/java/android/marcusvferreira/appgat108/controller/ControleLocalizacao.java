@@ -19,6 +19,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DecimalFormat;
 
@@ -41,6 +43,12 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     private boolean isOrigemObtida = false; // Indica se a origem foi obtida
     private final Veiculo veiculo;
     private final Servico servico;
+
+    // Criar uma instância de ControleServico
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    ControleServico controleServico = new ControleServico(databaseReference);
+
+
 
     // Campos TextView na interface de usuário
     private final TextView campoVelocidadeMedia, campoVelocidadeRecomendada, campoVelocidadeAtual,
@@ -116,6 +124,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         // Armazena a primeira localização lida como origem e calcula a distância total do percurso
         if (!isOrigemObtida) {
             isOrigemObtida = true;
+            controleServico.deleteAllData();
             veiculo.getOrigem().setLatitude(location.getLatitude());
             veiculo.getOrigem().setLongitude(location.getLongitude());
             veiculo.setDistanciaTotal(location.distanceTo(veiculo.getDestino()));
@@ -127,8 +136,8 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             thread.start();
 
 
-            Thread threadFireBase = new Thread(servico);
-            threadFireBase.start();
+            // Escrever o objeto Servico no Firebase
+            controleServico.write(servico);
 
         }
     }

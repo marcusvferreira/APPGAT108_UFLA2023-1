@@ -5,15 +5,9 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.time.LocalDateTime;
 
-public class Servico implements Parcelable, Runnable {
+public class Servico implements Parcelable {
     private final int id;
     private final String carga, nomeMotorista;
     private LocalDateTime dataHoraInicio, dataHoraFim;
@@ -62,37 +56,6 @@ public class Servico implements Parcelable, Runnable {
     public String getNomeMotorista() {
         return nomeMotorista;
     }
-
-    @Override
-    public void run() {
-        // Inicializar o aplicativo Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference("servicos"); // Nome da coleção no banco de dados
-
-        // Criar um objeto JSON para representar os dados do Servico
-        JSONObject servicoData = new JSONObject();
-        try {
-            servicoData.put("id", id);
-            servicoData.put("carga", carga);
-            servicoData.put("nomeMotorista", nomeMotorista);
-            servicoData.put("dataHoraInicio", dataHoraInicio.toString());
-            //servicoData.put("dataHoraFim", dataHoraFim.toString());
-
-            /*
-            // Adicionar os dados do veiculo em um objeto JSON aninhado
-            JSONObject veiculoData = new JSONObject();
-            veiculoData.put("marca", veiculo.getMarca());
-            veiculoData.put("modelo", veiculo.getModelo());
-            veiculoData.put("placa", veiculo.getPlaca());
-            servicoData.put("veiculo", veiculoData);
-*/
-            // Salvar os dados no Firebase
-            reference.child(String.valueOf(id)).setValue(servicoData.toString());
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     // Métodos da interface Parcelable
     protected Servico(Parcel in) {
