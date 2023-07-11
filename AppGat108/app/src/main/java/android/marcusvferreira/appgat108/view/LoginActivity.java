@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (isLoginEfetuado) {
-            int idServico = (int) (Math.random() * 100); // Gera um número aleatório para identificar o serviço
+            int idServico = (int) (Math.random() * 1000); // Gera um número aleatório para identificar o serviço
             servico = new Servico(idServico, cargaSelecionada, nome);
 
             // Exibe uma mensagem de login bem-sucedido

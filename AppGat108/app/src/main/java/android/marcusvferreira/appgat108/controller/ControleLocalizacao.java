@@ -45,7 +45,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     private final Servico servico;
 
     // Criar uma instância de ControleServico
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("servicos");
     ControleServico controleServico = new ControleServico(databaseReference);
 
 
@@ -139,6 +139,17 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             // Escrever o objeto Servico no Firebase
             controleServico.write(servico);
 
+            controleServico.read((distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo) -> {
+                double distanciaRestante = veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida();
+                double tempoRestante = veiculo.getTempoDesejeado() - veiculo.getTempoTranscorrido();
+
+                double distanciaDesejada = Math.abs(distanciaRestante - distanciaRestanteOutroVeiculo);
+                double tempoRestanteMax = Math.max(tempoRestante, tempoRestanteOutroVeiculo);
+
+                double velocidadeDesejada = distanciaDesejada / tempoRestanteMax;
+                veiculo.setVelociddadeRecomendada(24);
+
+            }, servico);
         }
     }
 
