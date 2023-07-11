@@ -61,7 +61,7 @@ public class ControleServico {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String servicoId = dataSnapshot.getKey();
-                   // if (servicoId.equals(servico.getId())) {
+                    if (servicoId.equals(servico.getId())) {
                         JSONObject servicoData = dataSnapshot.getValue(JSONObject.class);
 
                         try {
@@ -77,7 +77,7 @@ public class ControleServico {
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-                  //  }
+                   }
                 }
             }
 
