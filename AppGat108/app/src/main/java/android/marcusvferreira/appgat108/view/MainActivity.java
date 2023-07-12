@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     horasSelecionada, minutosSelecionado));
             btnSelecionarTempo.setTextSize(14);
             isTempoDesejadoSelecionado = true;
-            veiculo.setTempoDesejeado((double) minutosSelecionado / 60 + horasSelecionada); //Passa para veículo o tempo selecionado em hrs
+            veiculo.setTempoDesejado((double) minutosSelecionado / 60 + horasSelecionada); //Passa para veículo o tempo selecionado em hrs
         };
         @SuppressWarnings("deprecation") TimePickerDialog timePickerDialog = new TimePickerDialog(
                 this, AlertDialog.THEME_HOLO_DARK, onTimeSetListener, horasSelecionada,

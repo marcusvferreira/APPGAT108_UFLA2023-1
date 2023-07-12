@@ -141,13 +141,13 @@ public class ControleLocalizacao implements Runnable, LocationListener {
 
             controleServico.read((distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo) -> {
                 double distanciaRestante = veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida();
-                double tempoRestante = veiculo.getTempoDesejeado() - veiculo.getTempoTranscorrido();
+                double tempoRestante = veiculo.getTempoDesejado() - veiculo.getTempoTranscorrido();
 
                 double distanciaDesejada = Math.abs(distanciaRestante - distanciaRestanteOutroVeiculo);
                 double tempoRestanteMax = Math.max(tempoRestante, tempoRestanteOutroVeiculo);
 
                 double velocidadeDesejada = distanciaDesejada / tempoRestanteMax;
-                veiculo.setVelociddadeRecomendada(24);
+                veiculo.setVelociddadeRecomendada(1000);
 
             }, servico);
         }
@@ -169,7 +169,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
             Toast.makeText(activity, "Chegou ao destino!", Toast.LENGTH_LONG).show();
         }
         // Verifica se o tempo transcorrido em é maior que o tempo desejado para chegar ao destino
-        else if (veiculo.getTempoTranscorrido() / 3600 > veiculo.getTempoDesejeado()) {
+        else if (veiculo.getTempoTranscorrido() / 3600 > veiculo.getTempoDesejado()) {
             activity.pausarTimer(); // Pausa o timer na MainActivity
             Toast.makeText(activity, "Não chegou ao destino!", Toast.LENGTH_LONG).show();
         }

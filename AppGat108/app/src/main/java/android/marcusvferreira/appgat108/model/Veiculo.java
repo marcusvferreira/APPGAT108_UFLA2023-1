@@ -16,7 +16,7 @@ import java.util.List;
 public class Veiculo {
 
     // Atributos da classe Veículo
-    private double distanciaPercorrida, distanciaTotal, tempoTranscorrido, tempoDesejeado,
+    private double distanciaPercorrida, distanciaTotal, tempoTranscorrido, tempoDesejado,
             velociddadeRecomendada, velocidadeMedia;
     private final List<Double> velocidadesInstantaneas = new ArrayList<>(); // Armazena as velocidades instantâneas obtidas pelo GPS
     private String modelo, carga; // Modelo do veículo
@@ -53,12 +53,12 @@ public class Veiculo {
         this.tempoTranscorrido = tempoTranscorrido;
     }
 
-    public double getTempoDesejeado() {
-        return tempoDesejeado;
+    public double getTempoDesejado() {
+        return tempoDesejado;
     }
 
-    public void setTempoDesejeado(double tempoDesejeado) {
-        this.tempoDesejeado = tempoDesejeado;
+    public void setTempoDesejado(double tempoDesejado) {
+        this.tempoDesejado = tempoDesejado;
     }
 
     public double getVelociddadeRecomendada() {

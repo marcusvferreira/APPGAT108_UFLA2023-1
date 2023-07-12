@@ -50,7 +50,7 @@ public class Processamento implements Runnable {
         veiculo.calcularVelocidadeMedia();
 
         // Calcula a velocidade recomendada
-        double tempoDesejado = veiculo.getTempoDesejeado(); // Tempo desejado já é retornado em hrs
+        double tempoDesejado = veiculo.getTempoDesejado(); // Tempo desejado já é retornado em hrs
         double tempoTranscorrido = veiculo.getTempoTranscorrido() / 3600; // Tempo transcorrido é retornado em seg, portanto o converte para hrs
         double tempoRestante = tempoDesejado - tempoTranscorrido;
         double distanciaRestante = (veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida()); // Distância restante em metros
