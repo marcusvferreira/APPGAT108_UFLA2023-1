@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         listaMotoristas.add(new Motorista("", ""));
+        listaMotoristas.add(new Motorista("Marcus", "m123"));
         listaMotoristas.add(new Motorista("Rafael", "r123"));
         listaMotoristas.add(new Motorista("Giovanna", "g123"));
         listaMotoristas.add(new Motorista("Enrique", "e123"));

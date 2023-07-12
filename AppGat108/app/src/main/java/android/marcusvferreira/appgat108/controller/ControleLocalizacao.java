@@ -124,7 +124,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
         // Armazena a primeira localização lida como origem e calcula a distância total do percurso
         if (!isOrigemObtida) {
             isOrigemObtida = true;
-            controleServico.deleteAllData();
+            controleServico.deletarTodosOsDados();
             veiculo.getOrigem().setLatitude(location.getLatitude());
             veiculo.getOrigem().setLongitude(location.getLongitude());
             veiculo.setDistanciaTotal(location.distanceTo(veiculo.getDestino()));
@@ -137,9 +137,9 @@ public class ControleLocalizacao implements Runnable, LocationListener {
 
 
             // Escrever o objeto Servico no Firebase
-            controleServico.write(servico);
+            controleServico.escrever(servico);
 
-            controleServico.read((distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo) -> {
+            controleServico.ler((distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo) -> {
                 double distanciaRestante = veiculo.getDistanciaTotal() - veiculo.getDistanciaPercorrida();
                 double tempoRestante = veiculo.getTempoDesejado() - veiculo.getTempoTranscorrido();
 
@@ -147,7 +147,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
                 double tempoRestanteMax = Math.max(tempoRestante, tempoRestanteOutroVeiculo);
 
                 double velocidadeDesejada = distanciaDesejada / tempoRestanteMax;
-                veiculo.setVelociddadeRecomendada(1000);
+                veiculo.setVelociddadeRecomendada(velocidadeDesejada);
 
             }, servico);
         }

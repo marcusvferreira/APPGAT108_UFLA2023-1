@@ -13,43 +13,64 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Essa classe é responsável por fornecer funcionalidades relacionadas ao controle de serviços
+ * utilizando criptografia AES-128 bits. Permite escrever e ler dados criptografados no Firebase com
+ * o auxílio da classe CriptografiaAES.
+ */
 public class ControleServico {
+
+    /**
+     * A variável DatabaseReference reference é um objeto que representa uma referência a
+     * um local específico no banco de dados do Firebase. Essa referência é utilizada para
+     * realizar operações de leitura, escrita e exclusão de dados nesse local.
+     */
     private final DatabaseReference reference;
+
+    // Criptografia AES-128 bits
+    private static String chave = "MARCUSAPPGAT108ABCDEFG0123456789";
+    private static String vetorInicializacao = "0123456789MARCUS";
 
     public ControleServico(DatabaseReference reference) {
         this.reference = reference;
     }
 
-    public void write(final Servico servico) {
-        new Thread(() -> writeData(servico)).start();
+    // Método para escrever os dados criptografados no Firebase
+    public void escrever(final Servico servico) {
+        new Thread(() -> escreverDados(servico)).start();
     }
 
-    private void writeData(final Servico servico) {
+    private void escreverDados(final Servico servico) {
         // Criar um objeto JSON para representar os dados do Servico
-        JSONObject servicoData = new JSONObject();
+        JSONObject dadosServico = new JSONObject();
         try {
-            servicoData.put("VeloRec", servico.getVeiculo().getVelociddadeRecomendada());
-            servicoData.put("nomeMotorista", servico.getNomeMotorista());
-            servicoData.put("carga", servico.getCarga());
-            servicoData.put("dataHoraInicio", servico.getDataHoraInicio().toString());
-            servicoData.put("distanciaTotal", servico.getVeiculo().getDistanciaTotal());
-            servicoData.put("distanciaPercorrida", servico.getVeiculo().getDistanciaPercorrida());
-            servicoData.put("tempoDesejado", servico.getVeiculo().getTempoDesejado());
-            servicoData.put("tempoTranscorrido", servico.getVeiculo().getTempoTranscorrido());
+            dadosServico.put("nomeMotorista", servico.getNomeMotorista());
+            dadosServico.put("carga", servico.getCarga());
+            dadosServico.put("dataHoraInicio", servico.getDataHoraInicio().toString());
+            dadosServico.put("distanciaTotal", servico.getVeiculo().getDistanciaTotal());
+            dadosServico.put("distanciaPercorrida", servico.getVeiculo().getDistanciaPercorrida());
+            dadosServico.put("tempoDesejado", servico.getVeiculo().getTempoDesejado());
+            dadosServico.put("tempoTranscorrido", servico.getVeiculo().getTempoTranscorrido());
 
-            // Salvar os dados no Firebase
-            reference.child(String.valueOf(servico.getId())).setValue(servicoData.toString());
-        } catch (JSONException e) {
+            // Converter o objeto JSON para uma string
+            String jsonDados = dadosServico.toString();
+
+            // Criptografar os dados
+            String dadosCriptografados = CriptografiaAES.criptografar(jsonDados, chave, vetorInicializacao);
+
+            // Salvar os dados criptografados no Firebase
+            reference.child(String.valueOf(servico.getId())).setValue(dadosCriptografados);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void read(final DataCallback callback, final Servico servico) {
-
-        new Thread(() -> readData(callback, servico)).start();
+    // Método para ler os dados criptografados do Firebase e descriptografá-los
+    public void ler(final DataCallback callback, final Servico servico) {
+        new Thread(() -> lerDados(callback, servico)).start();
     }
 
-    public void readData(final DataCallback callback, final Servico servico) {
+    private void lerDados(final DataCallback callback, final Servico servico) {
         DatabaseReference servicosRef = FirebaseDatabase.getInstance().getReference("servicos");
         servicosRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -57,24 +78,25 @@ public class ControleServico {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     int servicoId = Integer.parseInt(dataSnapshot.getKey());
                     if (servicoId != servico.getId()) {
-                        String servicoJson = dataSnapshot.getValue(String.class);
-                        JSONObject servicoData = null;
+                        String servicoCriptografado = dataSnapshot.getValue(String.class);
                         try {
-                            servicoData = new JSONObject(servicoJson);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
-                            double distanciaTotal = servicoData.getDouble("distanciaTotal");
-                            double distanciaPercorrida = servicoData.getDouble("distanciaPercorrida");
-                            double tempoDejado = servicoData.getDouble("tempoDesejado");
-                            double tempoTranscorrido = servicoData.getDouble("tempoTranscorrido");
+                            // Descriptografar os dados
+                            String dadosDescriptografados = CriptografiaAES.descriptografar(servicoCriptografado, chave, vetorInicializacao);
+
+                            // Converter a string descriptografada para um objeto JSON
+                            JSONObject dadosServico = new JSONObject(dadosDescriptografados);
+
+                            double distanciaTotal = dadosServico.getDouble("distanciaTotal");
+                            double distanciaPercorrida = dadosServico.getDouble("distanciaPercorrida");
+                            double tempoDesejado = dadosServico.getDouble("tempoDesejado");
+                            double tempoTranscorrido = dadosServico.getDouble("tempoTranscorrido");
 
                             double distanciaRestanteOutroVeiculo = distanciaTotal - distanciaPercorrida;
-                            double tempoRestanteOutroVeiculo = tempoDejado - tempoTranscorrido;
+                            double tempoRestanteOutroVeiculo = tempoDesejado - tempoTranscorrido;
 
+                            // Chamada do callback com os dados descriptografados
                             callback.onDataReceived(distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo);
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                         break;
@@ -89,13 +111,13 @@ public class ControleServico {
         });
     }
 
-    public void deleteAllData() {
+    // Método para deletar todos os dados do Firebase
+    public void deletarTodosOsDados() {
         reference.setValue(null);
     }
 
+    // Interface para retornar os dados descriptografados
     public interface DataCallback {
         void onDataReceived(double distanciaRestanteOutroVeiculo, double tempoRestanteOutroVeiculo);
     }
-
 }
-
