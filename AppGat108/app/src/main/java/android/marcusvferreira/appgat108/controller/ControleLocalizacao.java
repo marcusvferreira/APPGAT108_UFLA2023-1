@@ -61,7 +61,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
      * @param context  Contexto da aplicação
      * @param veiculo  Objeto do veículo
      * @param handler  Manipulador da interface de usuário
-     * @param servico
+     * @param servico  Objeto servico
      */
     public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler, Servico servico) {
         this.context = context;
