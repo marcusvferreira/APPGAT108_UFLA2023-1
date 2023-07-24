@@ -48,6 +48,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("servicos");
     ControleServico controleServico = new ControleServico(databaseReference);
 
+    private Medidor medidores;
 
 
     // Campos TextView na interface de usuário
@@ -57,18 +58,20 @@ public class ControleLocalizacao implements Runnable, LocationListener {
     /**
      * Construtor da classe.
      *
-     * @param activity Atividade principal
-     * @param context  Contexto da aplicação
-     * @param veiculo  Objeto do veículo
-     * @param handler  Manipulador da interface de usuário
-     * @param servico  Objeto servico
+     * @param activity  Atividade principal
+     * @param context   Contexto da aplicação
+     * @param veiculo   Objeto do veículo
+     * @param medidores
+     * @param handler   Manipulador da interface de usuário
+     * @param servico   Objeto servico
      */
-    public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Handler handler, Servico servico) {
+    public ControleLocalizacao(MainActivity activity, Context context, Veiculo veiculo, Medidor medidores, Handler handler, Servico servico) {
         this.context = context;
         this.veiculo = veiculo;
         this.handler = handler;
         this.activity = activity;
         this.servico = servico;
+        this.medidores = medidores;
 
         // Inicializa os campos TextView na main activity
         TextView campoLocalizacaoDestino = activity.findViewById(R.id.tv_loc_destino_dados);
@@ -132,7 +135,7 @@ public class ControleLocalizacao implements Runnable, LocationListener {
 
         if (activity.isTimerIniciado) {
             // Inicia uma nova thread para processar os dados de localização
-            Thread thread = new Thread(new Processamento(location, veiculo, handler, this));
+            Thread thread = new Thread(new Processamento(location, veiculo, medidores, handler, this));
             thread.start();
 
 

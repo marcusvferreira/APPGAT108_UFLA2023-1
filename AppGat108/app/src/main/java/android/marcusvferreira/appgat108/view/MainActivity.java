@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.marcusvferreira.appgat108.R;
 import android.marcusvferreira.appgat108.controller.ControleLocalizacao;
+import android.marcusvferreira.appgat108.controller.Medidor;
 import android.marcusvferreira.appgat108.model.Servico;
 import android.marcusvferreira.appgat108.model.Veiculo;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Fragment mapa;
 
     private Servico servico;
-
+    private Medidor medidores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnIniciar = findViewById(R.id.btn_iniciar);
         timer = new Timer();
         veiculo = new Veiculo();
-        controleLocalizacao = new ControleLocalizacao(this, this, veiculo, new Handler(Looper.getMainLooper()), servico);
+        medidores = new Medidor(veiculo);
+        controleLocalizacao = new ControleLocalizacao(this, this, veiculo, medidores, new Handler(Looper.getMainLooper()), servico);
 
 
 

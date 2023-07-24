@@ -20,20 +20,23 @@ public class Processamento implements Runnable {
     private final Veiculo veiculo;
     private final ControleLocalizacao controleLocalizacao;
     private final Handler handler;
+    private final Medidor medidores;
 
     /**
      * Construtor da classe Processamento.
      *
      * @param location            A localização atual.
      * @param veiculo             O veículo associado à localização.
+     * @param medidores
      * @param handler             O manipulador para a interface principal.
      * @param controleLocalizacao O objeto ControleLocalizacao responsável pela atualização da interface.
      */
-    public Processamento(Location location, Veiculo veiculo, Handler handler, ControleLocalizacao controleLocalizacao) {
+    public Processamento(Location location, Veiculo veiculo, Medidor medidores, Handler handler, ControleLocalizacao controleLocalizacao) {
         this.location = location;
         this.veiculo = veiculo;
         this.handler = handler;
         this.controleLocalizacao = controleLocalizacao;
+        this.medidores = medidores;
     }
 
     /**
@@ -43,6 +46,8 @@ public class Processamento implements Runnable {
     public void run() {
         // Calcula a distância percorrida (origem até a localizaçãoa atual)
         veiculo.setDistanciaPercorrida(location.distanceTo(veiculo.getOrigem()));
+
+        medidores.atualizarMedicao();
 
         // Calcula a velocidade média durante o percurso
         double velocidade = location.getSpeed();
