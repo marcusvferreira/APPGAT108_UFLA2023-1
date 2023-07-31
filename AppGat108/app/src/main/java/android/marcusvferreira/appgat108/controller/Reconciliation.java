@@ -3,6 +3,9 @@ package android.marcusvferreira.appgat108.controller;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.simple.SimpleMatrix;
 
+/**
+ * Classe para o cálculo da reconciliação, fornecida no material da disciplina GAT108.
+ */
 public class Reconciliation {
 
 	private double[] reconciledFlowDouble;

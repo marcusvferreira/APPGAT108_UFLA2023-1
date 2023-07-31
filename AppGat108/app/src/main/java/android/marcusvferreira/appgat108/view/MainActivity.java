@@ -54,11 +54,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean isTimerIniciado = false; //Controla se o timer foi iniciado
     private boolean isTempoDesejadoSelecionado = false; //Controla se o tempo desejado foi selecionado
     private Veiculo veiculo; //Declaração do objeto veículo
-
-    // private TextView campoLocalizacaoAtual;
     private ControleLocalizacao controleLocalizacao;
     private Fragment mapa;
-
     private Servico servico;
     private Medidor medidores;
 
@@ -82,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         veiculo = new Veiculo();
         medidores = new Medidor(veiculo);
         controleLocalizacao = new ControleLocalizacao(this, this, veiculo, medidores, new Handler(Looper.getMainLooper()), servico);
-
-
-
 
         Spinner opcaoVeiculos = findViewById(R.id.spinner_veiculos);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opcaoVeiculos, android.R.layout.simple_spinner_item);

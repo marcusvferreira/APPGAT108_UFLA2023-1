@@ -17,10 +17,11 @@ public class Veiculo {
 
     // Atributos da classe Veículo
     private double distanciaPercorrida, distanciaTotal, tempoTranscorrido, tempoDesejado,
-            velociddadeRecomendada, velocidadeMedia;
+            velocidadeRecomendada, velocidadeMedia;
     private final List<Double> velocidadesInstantaneas = new ArrayList<>(); // Armazena as velocidades instantâneas obtidas pelo GPS
-    private String modelo, carga; // Modelo do veículo
+    private String modelo; // Modelo do veículo
     private final Location origem, destino; // Armazenam a origem e o destino do veículo instanciado
+    private boolean verificadorCrossDocking = false;
 
     // O construtor instancia dois objetos Location (origem e destino) inicialmente vazio, pois serão definidos em ControleLocalizacao
     public Veiculo() {
@@ -61,16 +62,24 @@ public class Veiculo {
         this.tempoDesejado = tempoDesejado;
     }
 
-    public double getVelociddadeRecomendada() {
-        return velociddadeRecomendada;
+    public double getVelocidadeRecomendada() {
+        return velocidadeRecomendada;
     }
 
-    public void setVelociddadeRecomendada(double velociddadeRecomendada) {
-        this.velociddadeRecomendada = velociddadeRecomendada;
+    public void setVelocidadeRecomendada(double velocidadeRecomendada) {
+        this.velocidadeRecomendada = velocidadeRecomendada;
     }
 
     public double getVelocidadeMedia() {
         return velocidadeMedia;
+    }
+
+    public boolean isVerificadorCrossDocking() {
+        return verificadorCrossDocking;
+    }
+
+    public void setVerificadorCrossDocking(boolean verificadorCrossDocking) {
+        this.verificadorCrossDocking = verificadorCrossDocking;
     }
 
     /**

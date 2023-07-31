@@ -10,8 +10,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 /**
  * Essa classe é responsável por fornecer funcionalidades relacionadas ao controle de serviços
@@ -28,8 +29,8 @@ public class ControleServico {
     private final DatabaseReference reference;
 
     // Criptografia AES-128 bits
-    private static String chave = "MARCUSAPPGAT108ABCDEFG0123456789";
-    private static String vetorInicializacao = "0123456789MARCUS";
+    private final static String chave = "MARCUSAPPGAT108ABCDEFG0123456789";
+    private final static String vetorInicializacao = "0123456789MARCUS";
 
     public ControleServico(DatabaseReference reference) {
         this.reference = reference;
@@ -47,10 +48,12 @@ public class ControleServico {
             dadosServico.put("nomeMotorista", servico.getNomeMotorista());
             dadosServico.put("carga", servico.getCarga());
             dadosServico.put("dataHoraInicio", servico.getDataHoraInicio().toString());
+            dadosServico.put("velocidade", servico.getVeiculo().getVelocidadeRecomendada());
             dadosServico.put("distanciaTotal", servico.getVeiculo().getDistanciaTotal());
             dadosServico.put("distanciaPercorrida", servico.getVeiculo().getDistanciaPercorrida());
             dadosServico.put("tempoDesejado", servico.getVeiculo().getTempoDesejado());
             dadosServico.put("tempoTranscorrido", servico.getVeiculo().getTempoTranscorrido());
+            dadosServico.put("verificadorCrossDocking", servico.getVeiculo().isVerificadorCrossDocking());
 
             // Converter o objeto JSON para uma string
             String jsonDados = dadosServico.toString();
@@ -76,7 +79,7 @@ public class ControleServico {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    int servicoId = Integer.parseInt(dataSnapshot.getKey());
+                    int servicoId = Integer.parseInt(Objects.requireNonNull(dataSnapshot.getKey()));
                     if (servicoId != servico.getId()) {
                         String servicoCriptografado = dataSnapshot.getValue(String.class);
                         try {
@@ -88,14 +91,16 @@ public class ControleServico {
 
                             double distanciaTotal = dadosServico.getDouble("distanciaTotal");
                             double distanciaPercorrida = dadosServico.getDouble("distanciaPercorrida");
+                            double velocidadeOutroVeiculo = dadosServico.getDouble("velocidade");
                             double tempoDesejado = dadosServico.getDouble("tempoDesejado");
                             double tempoTranscorrido = dadosServico.getDouble("tempoTranscorrido");
+                            boolean verificadorCrossDockingOutroVeiculo = dadosServico.getBoolean("verificadorCrossDocking");
 
                             double distanciaRestanteOutroVeiculo = distanciaTotal - distanciaPercorrida;
-                            double tempoRestanteOutroVeiculo = tempoDesejado - tempoTranscorrido;
+                            double tempoRestanteOutroVeiculo = tempoDesejado - tempoTranscorrido/3600;
 
                             // Chamada do callback com os dados descriptografados
-                            callback.onDataReceived(distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo);
+                            callback.onDataReceived(distanciaRestanteOutroVeiculo, tempoRestanteOutroVeiculo, velocidadeOutroVeiculo, verificadorCrossDockingOutroVeiculo);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -118,6 +123,6 @@ public class ControleServico {
 
     // Interface para retornar os dados descriptografados
     public interface DataCallback {
-        void onDataReceived(double distanciaRestanteOutroVeiculo, double tempoRestanteOutroVeiculo);
+        void onDataReceived(double distanciaRestanteOutroVeiculo, double tempoRestanteOutroVeiculo, double velocidadeOutroVeiculo, boolean verificadorCrossDockingOutroVeiculo);
     }
 }
